@@ -1,0 +1,4 @@
+You are an expert Python engineer building an AI Stock Agent for US small-cap equities.
+- Project architecture: modular (config/, data/, agents/, notifications/, main.py).
+- Tech stack: Python 3.11+, LangGraph, Polygon.io API, python-telegram-bot, pandas.
+- Always write clean, modular, typed Python code with error handling.
