@@ -6,11 +6,11 @@ import json
 
 
 class BacktestEngine:
-    def __init__(self, mode: str = "sp500"):
+    def __init__(self, mode: str = "smallcap"):
         """
         mode 模式選項:
-        - 'sp500': 測試 S&P 500 500檔成分股
-        - 'smallcap': 測試熱門 Small-Cap 中小型高波動股
+        - 'smallcap': 測試熱門 Small-Cap 中小型高波動股 (預設)
+        - 'sp500': 測試 S&P 500 成分股
         - 'custom': 載入 config/watchlist.json 自訂清單
         """
         self.mode = mode
@@ -34,7 +34,6 @@ class BacktestEngine:
                 return ["AAPL", "MSFT", "NVDA", "AMZN", "GOOGL", "META", "TSLA", "AMD"]
 
         elif self.mode == "smallcap":
-            # Russell 2000 / 熱門 Small-Cap 高波動標的池
             print("⚡ 載入 Small-Cap 中小型高波動股觀察清單...")
             return [
                 "SMCX", "AIOT", "SOUN", "BBAI", "RGTI", "QUBT", "CRML", "GRML", "GLND",
@@ -43,7 +42,6 @@ class BacktestEngine:
             ]
 
         else:
-            # 載入 config/watchlist.json
             watchlist_path = os.path.join("config", "watchlist.json")
             if os.path.exists(watchlist_path):
                 with open(watchlist_path, "r", encoding="utf-8") as f:
@@ -53,7 +51,7 @@ class BacktestEngine:
             return ["SMCX", "SOUN", "BBAI", "NVDA"]
 
     def fetch_history(self, ticker: str, period: str = "1y", interval: str = "1d") -> pd.DataFrame:
-        """從 Yahoo v8 API 獲取長週期歷史數據 (預設 1y = 1 年)"""
+        """從 Yahoo v8 API 獲取長週期歷史數據"""
         url = f"https://query1.finance.yahoo.com/v8/finance/chart/{ticker}?range={period}&interval={interval}"
         try:
             res = self.session.get(url, timeout=10)
@@ -81,11 +79,22 @@ class BacktestEngine:
         except Exception:
             return pd.DataFrame()
 
-    def run_backtest(self, ticker: str, period: str = "1y", rvol_thresh: float = 2.0, tp_pct: float = 0.10, sl_pct: float = 0.03):
+    def run_backtest(
+        self, 
+        ticker: str, 
+        period: str = "1y", 
+        rvol_thresh: float = 2.0, 
+        tp_pct: float = 0.10, 
+        sl_pct: float = 0.03,
+        cooldown_days: int = 5,
+        max_ma20_dist: float = 0.15
+    ):
         """
-        長週期歷史回測引擎
-        - 買入觸發: RVOL >= 2.0 + 當日漲幅 >= 3% + 站上 MA20 均線
-        - 風控出場: 停利 +10%, 停損 -3%, 最長持倉 5 天
+        優化版長週期歷史回測引擎:
+        1. 進場條件: RVOL >= 2.0 + 當日漲幅 >= 3% + 站上 MA20
+        2. 偏離度過濾: (Close - MA20) / MA20 <= 15% (避免追高)
+        3. 風控出場: 停利 +10%, 停損 -3%, 最長持倉 5 天
+        4. 冷卻期機制: 停損後冷卻 5 個交易日禁止再次進場
         """
         df = self.fetch_history(ticker, period=period, interval="1d")
         if df.empty or len(df) < 20:
@@ -97,15 +106,31 @@ class BacktestEngine:
         df["day_change"] = (df["close"] - df["open"]) / df["open"]
 
         trades = []
+        cooldown_until_idx = 0
         
-        for i in range(20, len(df) - 1):
+        i = 20
+        while i < len(df) - 1:
+            # 若處於虧損冷卻期，跳過該交易日
+            if i < cooldown_until_idx:
+                i += 1
+                continue
+
             row = df.iloc[i]
             
             cond_rvol = row["rvol"] >= rvol_thresh
             cond_bull = row["day_change"] >= 0.03
-            cond_trend = row["close"] > row["ma20"] if pd.notnull(row["ma20"]) else True
+            
+            # MA20 趨勢與偏離度檢查
+            ma20 = row["ma20"]
+            if pd.notnull(ma20) and ma20 > 0:
+                cond_trend = row["close"] > ma20
+                # 均線偏離度過濾：股價高出 MA20 不得超過 15%
+                cond_not_overextended = ((row["close"] - ma20) / ma20) <= max_ma20_dist
+            else:
+                cond_trend = True
+                cond_not_overextended = True
 
-            if cond_rvol and cond_bull and cond_trend:
+            if cond_rvol and cond_bull and cond_trend and cond_not_overextended:
                 entry_price = row["close"]
                 entry_date = row["timestamp"]
                 tp_price = entry_price * (1 + tp_pct)
@@ -114,7 +139,9 @@ class BacktestEngine:
                 trade_result = None
                 exit_price = entry_price
                 exit_date = None
+                exit_idx = i
 
+                # 模擬未來的持倉走勢 (最多 5 個交易日)
                 for j in range(i + 1, min(i + 6, len(df))):
                     future_row = df.iloc[j]
                     
@@ -122,15 +149,19 @@ class BacktestEngine:
                         trade_result = "LOSS"
                         exit_price = sl_price
                         exit_date = future_row["timestamp"]
+                        exit_idx = j
                         break
                     elif future_row["high"] >= tp_price:
                         trade_result = "WIN"
                         exit_price = tp_price
                         exit_date = future_row["timestamp"]
+                        exit_idx = j
                         break
 
+                # 持倉期滿平倉
                 if not trade_result:
-                    exit_row = df.iloc[min(i + 5, len(df) - 1)]
+                    exit_idx = min(i + 5, len(df) - 1)
+                    exit_row = df.iloc[exit_idx]
                     exit_price = exit_row["close"]
                     exit_date = exit_row["timestamp"]
                     trade_result = "WIN" if exit_price > entry_price else "LOSS"
@@ -146,12 +177,21 @@ class BacktestEngine:
                     "pnl_pct": round(pnl_pct * 100, 2)
                 })
 
+                # 若本次交易觸發 LOSS，設定 5 天冷卻期
+                if trade_result == "LOSS":
+                    cooldown_until_idx = exit_idx + cooldown_days + 1
+                
+                # 持倉期間不重複開倉，將指針推至平倉日後
+                i = exit_idx + 1
+            else:
+                i += 1
+
         return trades
 
     def evaluate_all(self, period: str = "1y"):
-        print(f"\n📊 開始執行 AI Stock Agent 大數據壓力測試...")
+        print(f"\n📊 開始執行 AI Stock Agent 大數據壓力測試 (冷卻期 + 均線偏離過濾)...")
         print(f"• 標的池模式: {self.mode.upper()}")
-        print(f"• 回測時間跨度: {period} (歷史天數)")
+        print(f"• 回測時間跨度: {period}")
         print("="*60)
 
         all_trades = []
@@ -166,7 +206,7 @@ class BacktestEngine:
             if processed_count % 50 == 0 or processed_count == len(self.tickers):
                 print(f"⏳ 進度: [{processed_count}/{len(self.tickers)}] 已完成掃描...")
 
-            time.sleep(0.05)  # 防封包冷卻
+            time.sleep(0.05)
 
         if not all_trades:
             print("❌ 無符合條件之交易訊號或歷史數據不足。")
@@ -179,7 +219,7 @@ class BacktestEngine:
         avg_pnl = tdf["pnl_pct"].mean()
 
         print("\n" + "="*60)
-        print(f"📈 【長週期壓力測試總結報告】")
+        print(f"📈 【進階風控壓力測試總結報告】")
         print(f"• 掃描總標的數: {len(self.tickers)} 檔")
         print(f"• 總觸發交易次數: {total_trades} 次")
         print(f"• 總勝率: {win_rate:.2f}% ({wins}/{total_trades})")
@@ -190,7 +230,5 @@ class BacktestEngine:
 
 
 if __name__ == "__main__":
-    # 預設執行 Small-Cap 測試 (若要跑 S&P 500 請傳入 mode="sp500")
-    # 可調整時間跨度 period="1y" (1年) 或 "2y" (2年)
     engine = BacktestEngine(mode="smallcap")
     engine.evaluate_all(period="1y")
