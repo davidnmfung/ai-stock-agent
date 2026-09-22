@@ -13,8 +13,8 @@ class BacktestEngine:
             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
         })
 
-    def fetch_history(self, ticker: str, period: str = "30d", interval: str = "1d") -> pd.DataFrame:
-        """從 Yahoo v8 API 獲取歷史 OHLCV 數據"""
+    def fetch_history(self, ticker: str, period: str = "90d", interval: str = "1d") -> pd.DataFrame:
+        """從 Yahoo v8 API 獲取歷史 OHLCV 數據 (擴充至 90 天)"""
         url = f"https://query1.finance.yahoo.com/v8/finance/chart/{ticker}?range={period}&interval={interval}"
         try:
             res = self.session.get(url, timeout=10)
@@ -44,29 +44,38 @@ class BacktestEngine:
             print(f"[{ticker}] 抓取異常: {e}")
             return pd.DataFrame()
 
-    def run_backtest(self, ticker: str, rvol_thresh: float = 1.2, tp_pct: float = 0.10, sl_pct: float = 0.03):
+    def run_backtest(self, ticker: str, rvol_thresh: float = 2.0, tp_pct: float = 0.10, sl_pct: float = 0.03):
         """
-        執行單一標的歷史回測
-        - 買入觸發: RVOL > rvol_thresh (基於 5 日均量)
+        執行單一標的歷史回測 (優化策略版)
+        - 買入觸發: 
+          1. RVOL >= rvol_thresh (預設 2.0, 基於 5 日均量)
+          2. 當日大漲 >= 3% 且為紅 K 陽線
+          3. 股價位於 20 日均線 (MA20) 之上 (順勢過濾)
         - 停利點 (TP): +10%
         - 停損點 (SL): -3%
         """
-        df = self.fetch_history(ticker, period="60d", interval="1d")
-        if df.empty or len(df) < 10:
-            print(f"⚠️ [{ticker}] 歷史數據不足，跳過回測。")
+        df = self.fetch_history(ticker, period="90d", interval="1d")
+        if df.empty or len(df) < 20:
+            print(f"⚠️ [{ticker}] 歷史數據不足 (至少需要 20 天)，跳過回測。")
             return None
 
-        # 計算 5 日平均成交量與 RVOL
+        # 技術指標計算
         df["vol_ma5"] = df["volume"].rolling(window=5).mean().shift(1)
         df["rvol"] = df["volume"] / df["vol_ma5"]
+        df["ma20"] = df["close"].rolling(window=20).mean()
+        df["day_change"] = (df["close"] - df["open"]) / df["open"]
 
         trades = []
         
-        for i in range(5, len(df) - 1):
+        for i in range(20, len(df) - 1):
             row = df.iloc[i]
             
-            # 觸發買入條件
-            if row["rvol"] >= rvol_thresh:
+            # 嚴格選股過濾條件
+            cond_rvol = row["rvol"] >= rvol_thresh
+            cond_bull = row["day_change"] >= 0.03
+            cond_trend = row["close"] > row["ma20"] if pd.notnull(row["ma20"]) else True
+
+            if cond_rvol and cond_bull and cond_trend:
                 entry_price = row["close"]
                 entry_date = row["timestamp"]
                 tp_price = entry_price * (1 + tp_pct)
@@ -113,7 +122,7 @@ class BacktestEngine:
         return trades
 
     def evaluate_all(self):
-        print("📊 開始執行 AI Stock Agent 歷史勝率與期望值回測...\n" + "="*50)
+        print("📊 開始執行 AI Stock Agent 歷史勝率與期望值回測 (優化策略版)...\n" + "="*50)
         all_trades = []
 
         for ticker in self.tickers:
@@ -123,7 +132,7 @@ class BacktestEngine:
             time.sleep(0.2)
 
         if not all_trades:
-            print("❌ 無法取得足夠交易記錄進行統計。")
+            print("❌ 無符合條件之交易訊號或歷史數據不足。")
             return
 
         tdf = pd.DataFrame(all_trades)
@@ -132,7 +141,7 @@ class BacktestEngine:
         win_rate = (wins / total_trades) * 100 if total_trades > 0 else 0
         avg_pnl = tdf["pnl_pct"].mean()
 
-        print(f"📈 【回測總結報告】")
+        print(f"📈 【回測總結報告 (優化版)】")
         print(f"• 標的數量: {len(self.tickers)} 檔")
         print(f"• 總觸發交易次數: {total_trades} 次")
         print(f"• 總勝率: {win_rate:.2f}% ({wins}/{total_trades})")
