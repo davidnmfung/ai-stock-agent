@@ -1,14 +1,10 @@
 import time
 import requests
-from requests.adapters import HTTPAdapter
-from urllib3.util import Retry
-import yfinance as yf
 
 
 class StockFetcher:
 
     def __init__(self, tickers=None):
-        # 預設關注清單，亦可於初始化時動態傳入
         self.tickers = tickers or [
             "SMCX",
             "AIOT",
@@ -17,80 +13,81 @@ class StockFetcher:
             "RGTI",
             "QUBT",
         ]
-        self.session = self._create_session()
-
-    def _create_session(self):
-        """建立帶有自動重試機制與完整 Header 的 Requests Session，防範 PythonAnywhere HTTP 429 封鎖"""
-        session = requests.Session()
-        session.headers.update({
+        self.session = requests.Session()
+        self.session.headers.update({
             "User-Agent": (
                 "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
                 "AppleWebKit/537.36 (KHTML, like Gecko) "
                 "Chrome/124.0.0.0 Safari/537.36"
             ),
-            "Accept": (
-                "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8"
-            ),
-            "Accept-Language": "en-US,en;q=0.5",
+            "Accept": "application/json",
         })
-
-        # 設定 HTTP 429 與 5xx 錯誤時自動重試機制
-        retries = Retry(
-            total=3,
-            backoff_factor=1,
-            status_forcelist=[429, 500, 502, 503, 504],
-        )
-        adapter = HTTPAdapter(max_retries=retries)
-        session.mount("https://", adapter)
-        session.mount("http://", adapter)
-        return session
 
     def get_top_gainers_or_surges(self, custom_tickers=None):
         targets = custom_tickers or self.tickers
         results = []
 
-        for ticker_symbol in targets:
+        for ticker in targets:
             try:
-                ticker = yf.Ticker(ticker_symbol, session=self.session)
-                df = ticker.history(period="5d")
+                # 呼叫不需要 Crumb / Cookie 的原生地圖 API
+                url = f"https://query1.finance.yahoo.com/v8/finance/chart/{ticker}?range=5d&interval=1d"
+                res = self.session.get(url, timeout=10)
 
-                if df.empty or len(df) < 2:
+                if res.status_code != 200:
                     print(
-                        f"[{ticker_symbol}] 數據無效或回傳空白 (可能是 HTTP"
-                        " 429)，跳過。"
+                        f"[{ticker}] HTTP Error {res.status_code}，跳過。"
                     )
                     continue
 
-                latest = df.iloc[-1]
-                price = round(float(latest["Close"]), 2)
+                data = res.json()
+                chart_result = data.get("chart", {}).get("result")
 
-                avg_volume = df["Volume"].mean()
-                latest_volume = float(latest["Volume"])
-                rvol = (
-                    round(float(latest_volume / avg_volume), 2)
-                    if avg_volume > 0
-                    else 1.0
+                if not chart_result:
+                    print(f"[{ticker}] 無數據，跳過。")
+                    continue
+
+                meta = chart_result[0].get("meta", {})
+                price = round(
+                    float(
+                        meta.get("regularMarketPrice")
+                        or meta.get("chartPreviousClose")
+                        or 0
+                    ),
+                    2,
                 )
 
-                # 🌟 改用 fast_info 獲取市值，避免呼叫 ticker.info 觸發 Crumb 429 封鎖
-                market_cap = 0
-                try:
-                    fast_info = getattr(ticker, "fast_info", {})
-                    market_cap = fast_info.get("market_cap", 0) or 0
-                except Exception:
-                    market_cap = 0
+                # 計算簡化 RVOL (當日成交量 vs 5日平均成交量)
+                indicators = (
+                    chart_result[0]
+                    .get("indicators", {})
+                    .get("quote", [{}])[0]
+                )
+                volumes = [
+                    v for v in indicators.get("volume", []) if v is not None
+                ]
 
-                results.append({
-                    "ticker": ticker_symbol,
-                    "price": price,
-                    "rvol": rvol,
-                    "market_cap": market_cap,
-                })
+                latest_vol = volumes[-1] if volumes else 0
+                avg_vol = (
+                    sum(volumes) / len(volumes) if len(volumes) > 0 else 1
+                )
+                rvol = (
+                    round(latest_vol / avg_vol, 2) if avg_vol > 0 else 1.0
+                )
 
-                # 每次請求間隔 0.5 秒，避免頻繁請求觸發風控
-                time.sleep(0.5)
+                # 讀取市值
+                market_cap = meta.get("marketCap", 0) or 0
+
+                if price > 0:
+                    results.append({
+                        "ticker": ticker,
+                        "price": price,
+                        "rvol": rvol,
+                        "market_cap": market_cap,
+                    })
+
+                time.sleep(0.3)  # 請求間隔保護
 
             except Exception as e:
-                print(f"[{ticker_symbol} 擷取失敗]: {e}")
+                print(f"[{ticker} 擷取失敗]: {e}")
 
         return results
