@@ -5,10 +5,10 @@ import pandas as pd
 import json
 
 # ---------------------------------------------------------------------------
-# Telegram 推播設定 (請確認填入你的 Bot Token 與 Chat ID，或從環境變數讀取)
+# Telegram 推播設定 (已固定預設憑證，亦可由環境變數覆蓋)
 # ---------------------------------------------------------------------------
-TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN", "YOUR_TELEGRAM_BOT_TOKEN")
-TELEGRAM_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID", "YOUR_TELEGRAM_CHAT_ID")
+TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN", "8894423509:AAF-pYhPtoW1kQeR8rLf0TwtcIw1tlCVLwA")
+TELEGRAM_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID", "852353260")
 
 
 def send_telegram_summary(message: str):
@@ -35,7 +35,7 @@ def send_telegram_summary(message: str):
 
 class RealtimeAgentScanner:
     def __init__(self):
-        # 擴充版 Small-Cap 標的池 (25+ 檔高波動熱門飆股)
+        # 擴充版 Small-Cap 標的池 (25+ 档高波動熱門飆股)
         self.watchlist = [
             "SMCX", "AIOT", "SOUN", "BBAI", "RGTI", "QUBT", "CRML", "GRML", "GLND",
             "IONQ", "PLTR", "MARA", "RIOT", "CLSK", "SOFI", "UPST", "AFRM", "PATH", 
