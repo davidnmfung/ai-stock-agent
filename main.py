@@ -2,172 +2,162 @@ import os
 import time
 import requests
 import pandas as pd
-import json
+import yfinance as yf
+from datetime import datetime
 
-# ---------------------------------------------------------------------------
-# Telegram 推播設定 (固定預設憑證，亦可由環境變數覆蓋)
-# ---------------------------------------------------------------------------
+# ==================== 憑證與設定 ====================
 TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN", "8894423509:AAF-pYhPtoW1kQeR8rLf0TwtcIw1tlCVLwA")
 TELEGRAM_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID", "852353260")
 
+CORE_WATCHLIST = [
+    "SMCX", "AIOT", "SOUN", "BBAI", "RGTI", "QUBT", "CRML", "GRML", "GLND", 
+    "IONQ", "PLTR", "MARA", "RIOT", "CLSK", "SOFI", "UPST", "AFRM", "PATH", 
+    "ASTS", "RKLB", "JOBY", "LUNR", "OKLO", "SMR", "NBIS"
+]
 
-def send_telegram_summary(message: str):
-    """發送單一彙整式 Telegram 訊息"""
-    if not TELEGRAM_BOT_TOKEN or TELEGRAM_BOT_TOKEN == "YOUR_TELEGRAM_BOT_TOKEN":
-        print("⚠️ 未設定 TELEGRAM_BOT_TOKEN，僅在主控台輸出：\n", message)
-        return
+# 策略門檻設定 (優化版：靈敏度提高)
+MIN_RVOL = 1.3          # 放寬至 1.3 倍爆量
+MIN_GAIN = 1.5          # 放寬至 +1.5% 漲幅
+MAX_MA20_EXT = 0.25     # 放寬至 25% 均線延伸
 
+DYNAMIC_SCREENER_LIMIT = 50  # 擴大動態飆股池至 50 檔
+POLL_INTERVAL_SECONDS = 300  # 5 分鐘掃描一次
+HOURLY_SUMMARY_INTERVAL = 12 # 每 12 輪 (1 小時) 發送一次盤中熱門摘要
+
+# ==================== 功能函數 ====================
+
+def send_telegram_message(message: str):
+    """發送訊息至 Telegram"""
     url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage"
-    payload = {
-        "chat_id": TELEGRAM_CHAT_ID,
-        "text": message,
-        "parse_mode": "Markdown"
-    }
+    payload = {"chat_id": TELEGRAM_CHAT_ID, "text": message, "parse_mode": "Markdown"}
     try:
         res = requests.post(url, json=payload, timeout=10)
-        if res.status_code == 200:
-            print("✅ 彙整預警訊息已成功推播至 Telegram！")
-        else:
-            print(f"❌ Telegram 推播失敗: {res.text}")
+        res.raise_for_status()
     except Exception as e:
-        print(f"⚠️ Telegram API 發送異常: {e}")
+        print(f"❌ Telegram 發送失敗: {e}")
 
-
-class RealtimeAgentScanner:
-    def __init__(self):
-        # 核心 Small-Cap 固定觀察清單 (25 檔熱門股)
-        self.core_watchlist = [
-            "SMCX", "AIOT", "SOUN", "BBAI", "RGTI", "QUBT", "CRML", "GRML", "GLND",
-            "IONQ", "PLTR", "MARA", "RIOT", "CLSK", "SOFI", "UPST", "AFRM", "PATH", 
-            "ASTS", "RKLB", "JOBY", "LUNR", "OKLO", "SMR", "NBIS"
-        ]
-        self.session = requests.Session()
-        self.session.headers.update({
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
-        })
-
-    def fetch_dynamic_top_gainers(self) -> list:
-        """動態抓取美股當日市場漲幅/爆量前 25 名的飆股標的"""
-        url = "https://query1.finance.yahoo.com/v1/finance/screener/predefined/saved?scrIds=day_gainers&count=25"
-        try:
-            res = self.session.get(url, timeout=10)
-            if res.status_code == 200:
-                results = res.json().get("finance", {}).get("result", [{}])[0].get("quotes", [])
-                # 篩選價格 <= $50 的 Small/Mid-Cap 標的，避開權值股與指數 ETF
-                dynamic_tickers = [
-                    q["symbol"] for q in results 
-                    if "symbol" in q 
-                    and "^" not in q["symbol"] 
-                    and "." not in q["symbol"] 
-                    and q.get("regularMarketPrice", 999) <= 50
-                ]
-                print(f"🔥 [動態熱門飆股篩選] 今日實時市場獲取 {len(dynamic_tickers)} 檔大漲標的: {dynamic_tickers}")
-                return dynamic_tickers
-        except Exception as e:
-            print(f"⚠️ 動態飆股抓取失敗 (將維持使用核心清單): {e}")
+def get_dynamic_top_gainers(limit=DYNAMIC_SCREENER_LIMIT):
+    """從 Yahoo Finance 擷取動態熱門飆股"""
+    try:
+        url = "https://query1.finance.yahoo.com/v1/finance/screener/predefined/saved"
+        params = {"scrIds": "day_gainers", "count": limit}
+        headers = {"User-Agent": "Mozilla/5.0"}
+        res = requests.get(url, params=params, headers=headers, timeout=10)
+        data = res.json()
+        quotes = data.get("finance", {}).get("result", [{}])[0].get("quotes", [])
+        
+        # 篩選股價 <= 50 的飆股
+        gainers = [q["symbol"] for q in quotes if q.get("regularMarketPrice", 999) <= 50]
+        print(f"🔥 [動態熱門飆股篩選] 今日實時市場獲取 {len(gainers)} 檔大漲標的: {gainers}")
+        return gainers
+    except Exception as e:
+        print(f"⚠️ 動態擷取熱門股失敗 (將僅使用核心 Watchlist): {e}")
         return []
 
-    def get_full_watchlist(self) -> list:
-        """合併固定觀察清單與每日動態熱門飆股（自動去重）"""
-        dynamic_tickers = self.fetch_dynamic_top_gainers()
-        # dict.fromkeys 可確保去重的同時保留清單順序
-        combined = list(dict.fromkeys(self.core_watchlist + dynamic_tickers))
-        return combined
+def analyze_ticker(ticker: str):
+    """分析單一股票的技術指標"""
+    try:
+        stock = yf.Ticker(ticker)
+        df = stock.history(period="1mo", interval="1d")
+        if len(df) < 20:
+            return None
+        
+        latest_price = df['Close'].iloc[-1]
+        open_price = df['Open'].iloc[-1]
+        gain_pct = ((latest_price - open_price) / open_price) * 100
+        
+        # 計算 MA20 & RVOL
+        ma20 = df['Close'].rolling(20).mean().iloc[-1]
+        vol_avg_5d = df['Volume'].iloc[-6:-1].mean()
+        curr_vol = df['Volume'].iloc[-1]
+        rvol = (curr_vol / vol_avg_5d) if vol_avg_5d > 0 else 0
+        
+        # 爆發突破判斷
+        is_breakout = (
+            rvol >= MIN_RVOL and
+            gain_pct >= MIN_GAIN and
+            latest_price > ma20 and
+            ((latest_price - ma20) / ma20) <= MAX_MA20_EXT
+        )
+        
+        return {
+            "ticker": ticker,
+            "price": round(latest_price, 2),
+            "gain_pct": round(gain_pct, 2),
+            "rvol": round(rvol, 2),
+            "ma20": round(ma20, 2),
+            "is_breakout": is_breakout
+        }
+    except Exception:
+        return None
 
-    def fetch_realtime_data(self, ticker: str) -> pd.DataFrame:
-        """獲取最新 30 天日 K 數據"""
-        url = f"https://query1.finance.yahoo.com/v8/finance/chart/{ticker}?range=1m&interval=1d"
-        try:
-            res = self.session.get(url, timeout=10)
-            if res.status_code != 200:
-                return pd.DataFrame()
+def send_hourly_summary(metrics_list):
+    """發送盤中熱門摘要 (每小時)"""
+    if not metrics_list:
+        return
+    
+    # 依漲幅與量能排序
+    top_gainers = sorted(metrics_list, key=lambda x: x['gain_pct'], reverse=True)[:5]
+    top_rvol = sorted(metrics_list, key=lambda x: x['rvol'], reverse=True)[:5]
+    
+    msg = "📊 *【AI Stock Agent - 盤中熱門標的心跳摘要】*\n"
+    msg += f"⏰ 統計時間: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n\n"
+    
+    msg += "🚀 *漲幅領先 Top 5:*\n"
+    for item in top_gainers:
+        msg += f"• `${item['ticker']}`: ${item['price']} | 漲幅: `{item['gain_pct']}%` | RVOL: `{item['rvol']}x`\n"
+        
+    msg += "\n🔥 *量能爆發 Top 5:*\n"
+    for item in top_rvol:
+        msg += f"• `${item['ticker']}`: ${item['price']} | RVOL: `{item['rvol']}x` | 漲幅: `{item['gain_pct']}%`\n"
+        
+    send_telegram_message(msg)
 
-            chart = res.json().get("chart", {}).get("result", [{}])[0]
-            timestamps = chart.get("timestamp", [])
-            indicators = chart.get("indicators", {}).get("quote", [{}])[0]
+# ==================== 主流程迴圈 ====================
 
-            if not timestamps or not indicators:
-                return pd.DataFrame()
-
-            df = pd.DataFrame({
-                "timestamp": pd.to_datetime(timestamps, unit="s"),
-                "open": indicators.get("open", []),
-                "high": indicators.get("high", []),
-                "low": indicators.get("low", []),
-                "close": indicators.get("close", []),
-                "volume": indicators.get("volume", [])
-            }).dropna()
-
-            return df
-        except Exception:
-            return pd.DataFrame()
-
-    def scan_market(self):
-        watchlist = self.get_full_watchlist()
-        print(f"\n🔍 執行 AI Stock Agent 市場掃描...")
-        print(f"📋 載入總監控清單 (共 {len(watchlist)} 檔): {watchlist}")
-
-        triggered_alerts = []
-
-        for ticker in watchlist:
-            df = self.fetch_realtime_data(ticker)
-            if df.empty or len(df) < 20:
-                continue
-
-            # 計算指標
-            df["vol_ma5"] = df["volume"].rolling(window=5).mean().shift(1)
-            df["rvol"] = df["volume"] / df["vol_ma5"]
-            df["ma20"] = df["close"].rolling(window=20).mean()
-            df["day_change"] = (df["close"] - df["open"]) / df["open"]
-
-            latest = df.iloc[-1]
-            price = round(latest["close"], 2)
-            rvol = round(latest["rvol"], 2) if pd.notnull(latest["rvol"]) else 0.0
-            day_pct = round(latest["day_change"] * 100, 2)
-            ma20 = latest["ma20"]
-
-            # 技術面突破門檻 (RVOL >= 2.0, 漲幅 >= 3%, 站上 MA20 且離 MA20 不超過 15%)
-            cond_rvol = rvol >= 2.0
-            cond_bull = latest["day_change"] >= 0.03
-            cond_trend = price > ma20 if pd.notnull(ma20) else True
-            cond_not_overextended = ((price - ma20) / ma20) <= 0.15 if pd.notnull(ma20) and ma20 > 0 else True
-
-            if cond_rvol and cond_bull and cond_trend and cond_not_overextended:
-                # 收集觸發預警的股票資訊
-                alert_text = (
-                    f"• *${ticker}* | 價格: `${price}` | 漲幅: `+{day_pct}%` | RVOL: `{rvol}x`\n"
-                    f"  💡 _突破 MA20 均線，量能放大 {rvol} 倍，符合起漲訊號。_"
-                )
-                triggered_alerts.append(alert_text)
-                print(f"🎯 [觸發預警] ${ticker} - 價格: ${price}, RVOL: {rvol}x, 漲幅: +{day_pct}%")
-
-            time.sleep(0.05)
-
-        # 彙整發送單一 Telegram 報告
-        if triggered_alerts:
-            summary_message = (
-                f"🚀 *AI 爆發股市場監控預警 (動態彙整報告)*\n\n"
-                f"當前共有 *{len(triggered_alerts)}* 檔標的符合爆量突破條件：\n\n"
-                + "\n\n".join(triggered_alerts)
-                + f"\n\n⏰ 掃描時間: {time.strftime('%Y-%m-%d %H:%M:%S')}"
-            )
-            send_telegram_summary(summary_message)
-        else:
-            print("ℹ️ 本輪掃描無符合條件之爆發股，暫不推播訊息。")
-
-
-if __name__ == "__main__":
-    print("🤖 AI Stock Agent 已啟動，開始於美股盤中常駐監控 (含動態熱門飆股篩選) ...")
-    scanner = RealtimeAgentScanner()
+def main():
+    print("🚀 AI Stock Agent 已啟動，開始於美股盤中常駐監控...")
+    loop_count = 0
     
     while True:
-        try:
-            scanner.scan_market()
-            print("\n⏳ 等待 5 分鐘後進行下一次市場掃描... (可按 Ctrl + C 停止運行)")
-            time.sleep(300)
-        except KeyboardInterrupt:
-            print("\n🛑 手動停止監控程序。")
-            break
-        except Exception as e:
-            print(f"⚠️ 運行中發生錯誤: {e}")
-            time.sleep(60)
+        loop_count += 1
+        print(f"\n🔍 [第 {loop_count} 輪掃描] 開始執行市場掃描...")
+        
+        # 1. 取得最新監控清單
+        dynamic_gainers = get_dynamic_top_gainers()
+        combined_list = list(dict.fromkeys(CORE_WATCHLIST + dynamic_gainers))
+        print(f"📋 載入總監控清單 (共 {len(combined_list)} 檔): {combined_list}")
+        
+        breakout_signals = []
+        all_metrics = []
+        
+        # 2. 逐一掃描股票
+        for ticker in combined_list:
+            res = analyze_ticker(ticker)
+            if res:
+                all_metrics.append(res)
+                if res['is_breakout']:
+                    breakout_signals.append(res)
+        
+        # 3. 處理即時突破預警
+        if breakout_signals:
+            msg = f"🚨 *AI 爆發股市場監控預警*\n\n當前共有 {len(breakout_signals)} 檔標的符合爆量突破條件：\n\n"
+            for sig in breakout_signals:
+                msg += f"• *${sig['ticker']}* | 價格: `${sig['price']}` | 漲幅: `+{sig['gain_pct']}%` | RVOL: `{sig['rvol']}x`\n"
+                msg += f"  突破 MA20 均線，量能放大 {sig['rvol']} 倍，符合起漲訊號。\n\n"
+            msg += f"⏰ 掃描時間: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}"
+            send_telegram_message(msg)
+            print("✅ 發現符合條件之爆發股，已發送 Telegram 預警！")
+        else:
+            print("ℹ️ 本輪掃描無符合條件之爆發股，暫不推播即時突破預警。")
+            
+        # 4. 每 12 輪 (1 小時) 推播盤中摘要報告
+        if loop_count % HOURLY_SUMMARY_INTERVAL == 0:
+            print("📊 發送每小時盤中熱門摘要報告...")
+            send_hourly_summary(all_metrics)
+            
+        print(f"⌛ 等待 5 分鐘後進行下一次市場掃描...")
+        time.sleep(POLL_INTERVAL_SECONDS)
+
+if __name__ == "__main__":
+    main()
