@@ -8,7 +8,7 @@ from datetime import datetime
 # ==================== 憑證與設定 ====================
 TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN", "8894423509:AAF-pYhPtoW1kQeR8rLf0TwtcIw1tlCVLwA")
 # 若已換成群組 ID，請在此修改 (例如 "-100XXXXXXXXXX")
-TELEGRAM_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID", "852353260")
+TELEGRAM_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID", "-5190891893")
 
 CORE_WATCHLIST = [
     "SMCX", "AIOT", "SOUN", "BBAI", "RGTI", "QUBT", "CRML", "GRML", "GLND", 
