@@ -98,6 +98,42 @@ def analyze_ticker(ticker: str):
     except Exception:
         return None
 
+def get_enriched_info(ticker_symbol: str):
+    """抓取市值、板塊、做空比例等補充交易資訊 (帶完整容錯)"""
+    info_data = {
+        "sector": "N/A",
+        "market_cap": "N/A",
+        "short_float": "N/A",
+        "tv_url": f"https://www.tradingview.com/chart/?symbol={ticker_symbol}",
+        "finviz_url": f"https://finviz.com/quote.ashx?t={ticker_symbol}"
+    }
+    try:
+        stock = yf.Ticker(ticker_symbol)
+        info = stock.info or {}
+        
+        # 板塊
+        info_data["sector"] = info.get("sector", "N/A")
+        
+        # 市值格式化 ($B / $M)
+        mc = info.get("marketCap")
+        if mc:
+            if mc >= 1e9:
+                info_data["market_cap"] = f"${mc / 1e9:.2f}B"
+            elif mc >= 1e6:
+                info_data["market_cap"] = f"${mc / 1e6:.1f}M"
+            else:
+                info_data["market_cap"] = f"${mc:,.0f}"
+                
+        # 做空比例 (Short Percent of Float)
+        sf = info.get("shortPercentOfFloat")
+        if sf is not None:
+            info_data["short_float"] = f"{round(sf * 100, 1)}%"
+            
+    except Exception as e:
+        print(f"⚠️ 擷取 {ticker_symbol} 基本面資訊失敗: {e}")
+        
+    return info_data
+
 def get_best_options(ticker_symbol: str):
     """自動篩選流動性良好且天期合適的首選 Call 期權"""
     try:
@@ -249,15 +285,25 @@ def main():
         if breakout_signals:
             msg = f"🚨 *AI 爆發股市場監控預警 (新起漲標的)*\n\n當前有 {len(breakout_signals)} 檔新標的符合爆量突破條件：\n\n"
             for sig in breakout_signals:
-                msg += f"• *${sig['ticker']}* | 價格: `${sig['price']}` | 漲幅: `+{sig['gain_pct']}%` | RVOL: `{sig['rvol']}x`\n"
+                ticker = sig['ticker']
+                msg += f"• *${ticker}* | 價格: `${sig['price']}` | 漲幅: `+{sig['gain_pct']}%` | RVOL: `{sig['rvol']}x`\n"
                 msg += f"  突破 MA20 均線，量能放大 {sig['rvol']} 倍，符合起漲訊號。\n"
                 
-                opt = get_best_options(sig['ticker'])
+                # 1. 補充基本面資料（市值、板塊、做空率）
+                enriched = get_enriched_info(ticker)
+                msg += f"  🏷️ *基本面*: 板塊 `{enriched['sector']}` | 市值 `{enriched['market_cap']}`"
+                if enriched['short_float'] != "N/A":
+                    msg += f" | 做空率 `{enriched['short_float']}`"
+                msg += "\n"
+                
+                # 2. 首選 Call 期權
+                opt = get_best_options(ticker)
                 if opt and opt.get('call'):
                     c = opt['call']
                     msg += f"  🎯 *首選 Call 期權*: 到期日 `{opt['exp']}` | 履約價 `${c['strike']}` | 賣價 (Ask) `${c['ask']}` | 成交量 `{c['volume']}`\n"
                 
-                is_near, earnings_info, news_list = get_earnings_and_news(sig['ticker'])
+                # 3. 財報日與新聞
+                is_near, earnings_info, news_list = get_earnings_and_news(ticker)
                 if earnings_info:
                     msg += f"  {earnings_info}\n"
                 if news_list:
@@ -265,8 +311,11 @@ def main():
                     for news in news_list:
                         msg += f"    • [{news['title']}]({news['url']})\n"
                 
+                # 4. 快捷圖表連結
+                msg += f"  🔗 [📈 TradingView 圖表]({enriched['tv_url']}) | [📊 Finviz 分析]({enriched['finviz_url']})\n"
                 msg += "\n"
-                alerted_today.add(sig['ticker'])
+                
+                alerted_today.add(ticker)
 
             msg += f"⏰ 掃描時間: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}"
             send_telegram_message(msg)
