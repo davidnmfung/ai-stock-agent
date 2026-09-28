@@ -104,6 +104,7 @@ def get_enriched_info(ticker_symbol: str):
         "sector": "N/A",
         "market_cap": "N/A",
         "short_float": "N/A",
+        "short_float_val": 0.0,
         "tv_url": f"https://www.tradingview.com/chart/?symbol={ticker_symbol}",
         "finviz_url": f"https://finviz.com/quote.ashx?t={ticker_symbol}"
     }
@@ -127,12 +128,25 @@ def get_enriched_info(ticker_symbol: str):
         # 做空比例 (Short Percent of Float)
         sf = info.get("shortPercentOfFloat")
         if sf is not None:
-            info_data["short_float"] = f"{round(sf * 100, 1)}%"
+            val = round(sf * 100, 1)
+            info_data["short_float_val"] = val
+            info_data["short_float"] = f"{val}%"
             
     except Exception as e:
         print(f"⚠️ 擷取 {ticker_symbol} 基本面資訊失敗: {e}")
         
     return info_data
+
+def calculate_signal_strength(rvol: float, short_float_val: float) -> str:
+    """自動計算突破訊號強度"""
+    if rvol >= 2.5 or (rvol >= 1.8 and short_float_val >= 10.0):
+        return "🔥 極強 (機構爆量/軋空雙驅動)"
+    elif rvol >= 1.8 or short_float_val >= 10.0:
+        return "⚡ 強 (動能起漲標的)"
+    elif rvol >= 1.5:
+        return "⚡ 中高 (標準突破)"
+    else:
+        return "⚠️ 中等 (邊界訊號，留意量能延續性)"
 
 def get_best_options(ticker_symbol: str):
     """自動篩選流動性良好且天期合適的首選 Call 期權"""
@@ -177,6 +191,24 @@ def get_best_options(ticker_symbol: str):
         print(f"⚠️ 期權數據擷取失敗 ({ticker_symbol}): {e}")
         return None
 
+def get_option_strategy_advice(price: float, opt_data: dict) -> str:
+    """根據期權數據自動產出『期權策略建議 (到期日 10-16)』"""
+    if not opt_data or not opt_data.get('call'):
+        return "💡 *期權策略建議 (到期日 10-16)*: 無合適期權或流動性不足，建議以現貨分批佈局為主。"
+    
+    c = opt_data['call']
+    exp = opt_data['exp']
+    strike = c['strike']
+    ask = c['ask']
+    vol = int(c['volume'])
+    
+    if strike < price:
+        return f"💡 *期權策略建議 (到期日 {exp})*: 首選 `${strike} Call` (價內) | 賣價 `${ask}` | 成交量 `{vol}`。Delta 較高，保護性好，適合鎖定波段漲幅。"
+    elif abs(strike - price) / price <= 0.03:
+        return f"💡 *期權策略建議 (到期日 {exp})*: 首選 `${strike} Call` (價平) | 賣價 `${ask}` | 成交量 `{vol}`。權利金適中，適合小資金博短線爆發。"
+    else:
+        return f"💡 *期權策略建議 (到期日 {exp})*: 首選 `${strike} Call` (價外) | 賣價 `${ask}` | 成交量 `{vol}`。槓桿較大，需留意倒數時間價值 (Theta) 衰退風險。"
+
 def get_earnings_and_news(ticker_symbol: str):
     """使用 Finnhub API 穩定獲取財報日與最新 3 則新聞（含超連結）"""
     is_earnings_near = False
@@ -188,7 +220,7 @@ def get_earnings_and_news(ticker_symbol: str):
         today_str = today.strftime('%Y-%m-%d')
         from_date_str = (today - timedelta(days=7)).strftime('%Y-%m-%d')
         
-        # 1. 擷取過去 7 天的最新新聞與文章網址 (Finnhub API)
+        # 1. 擷取新聞 (Finnhub API)
         news_url = f"https://finnhub.io/api/v1/company-news?symbol={ticker_symbol}&from={from_date_str}&to={today_str}&token={FINNHUB_API_KEY}"
         res_news = requests.get(news_url, timeout=5)
         if res_news.status_code == 200:
@@ -286,23 +318,29 @@ def main():
             msg = f"🚨 *AI 爆發股市場監控預警 (新起漲標的)*\n\n當前有 {len(breakout_signals)} 檔新標的符合爆量突破條件：\n\n"
             for sig in breakout_signals:
                 ticker = sig['ticker']
-                msg += f"• *${ticker}* | 價格: `${sig['price']}` | 漲幅: `+{sig['gain_pct']}%` | RVOL: `{sig['rvol']}x`\n"
-                msg += f"  突破 MA20 均線，量能放大 {sig['rvol']} 倍，符合起漲訊號。\n"
+                price = sig['price']
+                rvol = sig['rvol']
                 
-                # 1. 補充基本面資料（市值、板塊、做空率）
+                # 1. 補充基本面資料
                 enriched = get_enriched_info(ticker)
+                
+                # 2. 計算突破訊號強度
+                strength = calculate_signal_strength(rvol, enriched['short_float_val'])
+                
+                msg += f"• *${ticker}* | 價格: `${price}` | 漲幅: `+{sig['gain_pct']}%` | RVOL: `{rvol}x`\n"
                 msg += f"  🏷️ *基本面*: 板塊 `{enriched['sector']}` | 市值 `{enriched['market_cap']}`"
                 if enriched['short_float'] != "N/A":
                     msg += f" | 做空率 `{enriched['short_float']}`"
                 msg += "\n"
                 
-                # 2. 首選 Call 期權
-                opt = get_best_options(ticker)
-                if opt and opt.get('call'):
-                    c = opt['call']
-                    msg += f"  🎯 *首選 Call 期權*: 到期日 `{opt['exp']}` | 履約價 `${c['strike']}` | 賣價 (Ask) `${c['ask']}` | 成交量 `{c['volume']}`\n"
+                msg += f"  ⚡ *突破訊號強度*: {strength}\n"
                 
-                # 3. 財報日與新聞
+                # 3. 期權資料與策略建議
+                opt = get_best_options(ticker)
+                opt_advice = get_option_strategy_advice(price, opt)
+                msg += f"  {opt_advice}\n"
+                
+                # 4. 財報日與新聞
                 is_near, earnings_info, news_list = get_earnings_and_news(ticker)
                 if earnings_info:
                     msg += f"  {earnings_info}\n"
@@ -311,7 +349,7 @@ def main():
                     for news in news_list:
                         msg += f"    • [{news['title']}]({news['url']})\n"
                 
-                # 4. 快捷圖表連結
+                # 5. 快捷圖表連結
                 msg += f"  🔗 [📈 TradingView 圖表]({enriched['tv_url']}) | [📊 Finviz 分析]({enriched['finviz_url']})\n"
                 msg += "\n"
                 
