@@ -37,7 +37,8 @@ def send_telegram_message(message: str):
     payload = {
         "chat_id": TELEGRAM_CHAT_ID,
         "text": message,
-        "parse_mode": "Markdown"
+        "parse_mode": "Markdown",
+        "disable_web_page_preview": True  # 避免多條連結預覽畫面太佔空間
     }
     try:
         res = requests.post(url, json=payload, timeout=10)
@@ -141,26 +142,33 @@ def get_best_options(ticker_symbol: str):
         return None
 
 def get_earnings_and_news(ticker_symbol: str):
-    """使用 Finnhub API 穩定獲取財報日與最新 3 則新聞標題"""
+    """使用 Finnhub API 穩定獲取財報日與最新 3 則新聞（含超連結）"""
     is_earnings_near = False
     earnings_msg = ""
-    news_headlines = []
+    news_list = []
     
     try:
         today = datetime.now().date()
         today_str = today.strftime('%Y-%m-%d')
         from_date_str = (today - timedelta(days=7)).strftime('%Y-%m-%d')
         
-        # 1. 擷取過去 7 天的最新新聞 (Finnhub API)
+        # 1. 擷取過去 7 天的最新新聞與文章網址 (Finnhub API)
         news_url = f"https://finnhub.io/api/v1/company-news?symbol={ticker_symbol}&from={from_date_str}&to={today_str}&token={FINNHUB_API_KEY}"
         res_news = requests.get(news_url, timeout=5)
         if res_news.status_code == 200:
             news_data = res_news.json()
             for item in news_data[:3]:
                 headline = item.get("headline", "")
-                if headline:
-                    clean_title = headline.replace("*", "").replace("_", "").replace("`", "")
-                    news_headlines.append(clean_title)
+                article_url = item.get("url", "")
+                if headline and article_url:
+                    clean_title = (
+                        headline.replace("*", "")
+                        .replace("_", "")
+                        .replace("`", "")
+                        .replace("[", "")
+                        .replace("]", "")
+                    )
+                    news_list.append({"title": clean_title, "url": article_url})
 
         # 2. 擷取財報日日曆 (Finnhub API)
         future_date_str = (today + timedelta(days=30)).strftime('%Y-%m-%d')
@@ -183,7 +191,7 @@ def get_earnings_and_news(ticker_symbol: str):
     except Exception as e:
         print(f"⚠️ Finnhub 數據擷取失敗 ({ticker_symbol}): {e}")
 
-    return is_earnings_near, earnings_msg, news_headlines
+    return is_earnings_near, earnings_msg, news_list
 
 def send_summary(metrics_list):
     """發送盤中熱門摘要報告 (每 2 小時)"""
@@ -249,13 +257,13 @@ def main():
                     c = opt['call']
                     msg += f"  🎯 *首選 Call 期權*: 到期日 `{opt['exp']}` | 履約價 `${c['strike']}` | 賣價 (Ask) `${c['ask']}` | 成交量 `{c['volume']}`\n"
                 
-                is_near, earnings_info, headlines = get_earnings_and_news(sig['ticker'])
+                is_near, earnings_info, news_list = get_earnings_and_news(sig['ticker'])
                 if earnings_info:
                     msg += f"  {earnings_info}\n"
-                if headlines:
+                if news_list:
                     msg += "  📰 *最新新聞*:\n"
-                    for title in headlines:
-                        msg += f"    • {title}\n"
+                    for news in news_list:
+                        msg += f"    • [{news['title']}]({news['url']})\n"
                 
                 msg += "\n"
                 alerted_today.add(sig['ticker'])
