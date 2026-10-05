@@ -1,7 +1,7 @@
+from datetime import datetime, timedelta
 import math
 import os
 import sys
-from datetime import datetime, timedelta
 import pytz
 import requests
 import yfinance as yf
@@ -39,6 +39,19 @@ CORE_WATCHLIST = [
     "NBIS",
     "PPLI",
     "BIRK",
+    "VECO",
+    "FLY",
+    "ABCL",
+    "CAAP",
+    "ALVO",
+    "DFTX",
+    "GAP",
+    "AVPT",
+    "AEO",
+    "PACS",
+    "WAY",
+    "CCL",
+    "MGNI",
 ]
 
 MIN_RVOL = 1.3  # RVOL ≥ 1.3x 爆量
@@ -61,7 +74,7 @@ def is_us_market_hours() -> bool:
 
 
 def send_telegram_message(message: str):
-  """發送訊息至 Telegram"""
+  """發送訊息至 Telegram 群組"""
   if not TELEGRAM_BOT_TOKEN or not TELEGRAM_CHAT_ID:
     print("❌ 缺少 Telegram 憑證，無法發送訊息。")
     return
@@ -100,7 +113,7 @@ def get_enriched_info(ticker: str):
     info_data["sector"] = info.get("sector", "N/A")
 
     mc = info.get("marketCap")
-    if mc and isinstance(mc, (int, float)):
+    if mc and isinstance(mc, (int, float)) and not math.isnan(mc):
       if mc >= 1e9:
         info_data["market_cap"] = f"${mc / 1e9:.2f}B"
       elif mc >= 1e6:
@@ -109,7 +122,7 @@ def get_enriched_info(ticker: str):
         info_data["market_cap"] = f"${mc:,.0f}"
 
     sf = info.get("shortPercentOfFloat")
-    if sf is not None and isinstance(sf, (int, float)):
+    if sf is not None and isinstance(sf, (int, float)) and not math.isnan(sf):
       val = round(sf * 100, 1)
       info_data["short_float_val"] = val
       info_data["short_float"] = f"{val}%"
@@ -119,7 +132,7 @@ def get_enriched_info(ticker: str):
 
 
 def calculate_signal_strength(rvol: float, short_float_val: float) -> str:
-  """訊號強度試算"""
+  """突破訊號強度試算"""
   if rvol >= 2.5 or (rvol >= 1.8 and short_float_val >= 10.0):
     return "🔥 極強 (機構爆量/軋空雙驅動)"
   elif rvol >= 1.8 or short_float_val >= 10.0:
@@ -131,14 +144,12 @@ def calculate_signal_strength(rvol: float, short_float_val: float) -> str:
 
 
 def get_best_options_advice(ticker: str, price: float) -> str:
-  """期權策略建議"""
+  """首選 Call 期權建議"""
   try:
     stock = yf.Ticker(ticker)
     expirations = stock.options
     if not expirations:
-      return (
-          "💡 *期權策略建議*: 無合適期權或流動性不足，建議以現貨分批佈局為主。"
-      )
+      return ""
 
     today = datetime.now().date()
     target_exp = None
@@ -153,7 +164,7 @@ def get_best_options_advice(ticker: str, price: float) -> str:
     chain = stock.option_chain(target_exp)
     calls = chain.calls.copy()
     if calls.empty:
-      return "💡 *期權策略建議*: 無合適期權交易數據。"
+      return ""
 
     calls["strike_diff"] = (calls["strike"] - price * 1.02).abs()
     best_call = calls.sort_values("strike_diff").iloc[0]
@@ -177,15 +188,15 @@ def get_best_options_advice(ticker: str, price: float) -> str:
       advice = "槓桿較大，需留意倒數時間價值 (Theta) 衰退風險。"
 
     return (
-        f"💡 *期權策略建議 (到期日 {target_exp})*: 首選 `${strike} Call`"
-        f" {type_str} | 賣價 `${ask}` | 成交量 `{vol}`。{advice}"
+        f"  💡 *期權策略建議 (到期日 {target_exp})*: 首選 `${strike} Call`"
+        f" {type_str} | 賣價 `${ask}` | 成交量 `{vol}`。{advice}\n"
     )
   except Exception:
-    return "💡 *期權策略建議*: 建議以現貨佈局為主。"
+    return ""
 
 
 def get_news(ticker: str):
-  """Finnhub 最新新聞"""
+  """Finnhub 最新新聞」"""
   news_list = []
   if not FINNHUB_API_KEY:
     return news_list
@@ -197,7 +208,7 @@ def get_news(ticker: str):
     url = f"https://finnhub.io/api/v1/company-news?symbol={ticker}&from={from_str}&to={today_str}&token={FINNHUB_API_KEY}"
     res = requests.get(url, timeout=5)
     if res.status_code == 200:
-      for item in res.json()[:2]:
+      for item in res.json()[:3]:
         title = (
             item.get("headline", "")
             .replace("*", "")
@@ -214,8 +225,8 @@ def get_news(ticker: str):
   return news_list
 
 
-def analyze_ticker(ticker: str):
-  """技術指標分析（嚴格過濾 RVOL ≥ 1.3）"""
+def fetch_stock_data(ticker: str):
+  """獲取單檔股票實時數據（防 NaN 機制）"""
   try:
     stock = yf.Ticker(ticker)
     df = stock.history(period="1mo", interval="1d")
@@ -224,29 +235,132 @@ def analyze_ticker(ticker: str):
 
     latest_price = df["Close"].iloc[-1]
     open_price = df["Open"].iloc[-1]
-    if open_price == 0 or math.isnan(latest_price):
+
+    if (
+        open_price == 0
+        or math.isnan(latest_price)
+        or math.isnan(open_price)
+        or latest_price <= 0
+    ):
       return None
 
     gain_pct = ((latest_price - open_price) / open_price) * 100
-    ma20 = df["Close"].rolling(20).mean().iloc[-1]
     vol_avg_5d = df["Volume"].iloc[-6:-1].mean()
     curr_vol = df["Volume"].iloc[-1]
 
+    if math.isnan(gain_pct) or math.isnan(curr_vol):
+      return None
+
     rvol = (curr_vol / vol_avg_5d) if vol_avg_5d > 0 else 0
 
-    if rvol >= MIN_RVOL and gain_pct >= MIN_GAIN:
-      return {
-          "ticker": ticker,
-          "price": round(latest_price, 2),
-          "gain_pct": round(gain_pct, 2),
-          "rvol": round(rvol, 2),
-      }
+    return {
+        "ticker": ticker,
+        "price": round(latest_price, 2),
+        "gain_pct": round(gain_pct, 2),
+        "rvol": round(rvol, 2),
+    }
   except Exception:
-    pass
-  return None
+    return None
 
 
-# ==================== 單次執行流程 ====================
+# ==================== 報告產生邏輯 ====================
+
+
+def run_breakout_scan(stock_metrics):
+  """產生 🚨 爆發股市場監控預警」"""
+  breakout_signals = []
+  for data in stock_metrics:
+    if data["rvol"] >= MIN_RVOL and data["gain_pct"] >= MIN_GAIN:
+      breakout_signals.append(data)
+
+  if not breakout_signals:
+    print("ℹ️ 本輪未發現符合門檻 (RVOL≥1.3 & 漲幅≥1.5%) 之爆量突破標的。")
+    return
+
+  msg = "🚨 *AI 爆發股市場監控預警 (新起漲標的)*\n\n"
+  msg += f"當前有 {len(breakout_signals)} 檔新標的符合爆量突破條件：\n\n"
+
+  for sig in breakout_signals:
+    t = sig["ticker"]
+    p = sig["price"]
+    g = sig["gain_pct"]
+    r = sig["rvol"]
+
+    enriched = get_enriched_info(t)
+    strength = calculate_signal_strength(r, enriched["short_float_val"])
+    opt_advice = get_best_options_advice(t, p)
+    news_items = get_news(t)
+
+    msg += f"• *${t}* | 價格: `${p}` | 漲幅: `+{g}%` | RVOL: `{r}x`\n"
+    msg += "  突破 MA20 均線，量能放大" f" {r} 倍，符合起漲訊號。\n"
+    msg += (
+        f"  🏷️ *基本面*: 板塊 `{enriched['sector']}` | 市值"
+        f" `{enriched['market_cap']}`"
+    )
+    if enriched["short_float"] != "N/A":
+      msg += f" | 做空率 `{enriched['short_float']}`"
+    msg += "\n"
+    msg += f"  ⚡ *突破訊號強度*: {strength}\n"
+    if opt_advice:
+      msg += opt_advice
+
+    if news_items:
+      msg += "  📰 *最新新聞*:\n"
+      for title, n_url in news_items:
+        msg += f"    • [{title}]({n_url})\n"
+
+    msg += (
+        f"  🔗 [📈 TradingView 圖表]({enriched['tv_url']}) | [📊"
+        f" Finviz 分析]({enriched['finviz_url']})\n\n"
+    )
+
+  now_str = datetime.now(pytz.timezone("US/Eastern")).strftime(
+      "%Y-%m-%d %H:%M:%S"
+  )
+  msg += f"⏰ *掃描時間*: {now_str}"
+
+  send_telegram_message(msg)
+  print(f"✅ 成功推播 {len(breakout_signals)} 檔爆發股預警報告！")
+
+
+def run_heartbeat_summary(stock_metrics):
+  """產生 📊 盤中熱門標的心跳摘要 (每 2 小時觸發一次)"""
+  if not stock_metrics:
+    return
+
+  # 按漲幅排序 Top 5
+  top_gainers = sorted(stock_metrics, key=lambda x: x["gain_pct"], reverse=True)[
+      :5
+  ]
+  # 按 RVOL 排序 Top 5
+  top_rvols = sorted(stock_metrics, key=lambda x: x["rvol"], reverse=True)[:5]
+
+  now_str = datetime.now(pytz.timezone("US/Eastern")).strftime(
+      "%Y-%m-%d %H:%M:%S"
+  )
+
+  msg = "📊 【AI Stock Agent - 盤中熱門標的心跳摘要】\n"
+  msg += f"⏰ *統計時間*: {now_str}\n\n"
+
+  msg += "🚀 *漲幅領先 Top 5*:\n"
+  for s in top_gainers:
+    msg += (
+        f"• *${s['ticker']}*: `${s['price']}` | 漲幅: `{s['gain_pct']}%` | RVOL:"
+        f" `{s['rvol']}x`\n"
+    )
+
+  msg += "\n🔥 *量能爆發 Top 5*:\n"
+  for s in top_rvols:
+    msg += (
+        f"• *${s['ticker']}*: `${s['price']}` | RVOL: `{s['rvol']}x` | 漲幅:"
+        f" `{s['gain_pct']}%`\n"
+    )
+
+  send_telegram_message(msg)
+  print("✅ 成功推播盤中熱門標的心跳摘要報告！")
+
+
+# ==================== 主執行流程 ====================
 
 
 def main():
@@ -256,52 +370,20 @@ def main():
     print("💤 當前非美股交易時間，跳過本輪掃描。")
     sys.exit(0)
 
-  breakout_signals = []
+  # 掃描 Watchlist 內的所有股票
+  stock_metrics = []
   for ticker in CORE_WATCHLIST:
-    sig = analyze_ticker(ticker)
-    if sig:
-      breakout_signals.append(sig)
+    data = fetch_stock_data(ticker)
+    if data:
+      stock_metrics.append(data)
 
-  if breakout_signals:
-    msg = "🚨 *AI 爆發股市場監控預警 (新起漲標的)*\n\n"
-    msg += f"當前有 {len(breakout_signals)} 檔新標的符合爆量突破條件：\n\n"
+  # 1. 執行爆發股突破檢查
+  run_breakout_scan(stock_metrics)
 
-    for sig in breakout_signals:
-      t = sig["ticker"]
-      p = sig["price"]
-      g = sig["gain_pct"]
-      r = sig["rvol"]
-
-      enriched = get_enriched_info(t)
-      strength = calculate_signal_strength(r, enriched["short_float_val"])
-      opt_advice = get_best_options_advice(t, p)
-      news_items = get_news(t)
-
-      msg += f"• *${t}* | 價格: `${p}` | 漲幅: `+{g}%` | RVOL: `{r}x`\n"
-      msg += (
-          f"  🏷️ *基本面*: 板塊 `{enriched['sector']}` | 市值"
-          f" `{enriched['market_cap']}`"
-      )
-      if enriched["short_float"] != "N/A":
-        msg += f" | 做空率 `{enriched['short_float']}`"
-      msg += "\n"
-      msg += f"  ⚡ *突破訊號強度*: {strength}\n"
-      msg += f"  {opt_advice}\n"
-
-      if news_items:
-        msg += "  📰 *最新新聞*:\n"
-        for title, n_url in news_items:
-          msg += f"  • [{title}]({n_url})\n"
-
-      msg += (
-          f"  🔗 [📈 TradingView圖表]({enriched['tv_url']}) | [📊"
-          f" Finviz分析]({enriched['finviz_url']})\n\n"
-      )
-
-    send_telegram_message(msg)
-    print(f"✅ 成功發送 {len(breakout_signals)} 檔標的之詳細報告至 Telegram！")
-  else:
-    print("ℹ️ 本輪未發現符合條件之爆量突破標的。")
+  # 2. 每偶數小時的頭 10 分鐘（如 UTC 04:00, 06:00, 08:00 等）自動觸發心跳摘要
+  now_utc = datetime.now(pytz.utc)
+  if now_utc.hour % 2 == 0 and now_utc.minute < 10:
+    run_heartbeat_summary(stock_metrics)
 
 
 if __name__ == "__main__":
