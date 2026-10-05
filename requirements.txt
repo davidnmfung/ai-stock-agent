@@ -1,3 +1,4 @@
-yfinance
 requests
-python-dotenv
+yfinance
+pandas
+pytz
