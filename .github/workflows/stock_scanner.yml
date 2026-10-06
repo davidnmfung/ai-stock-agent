@@ -39,5 +39,7 @@ jobs:
         run: |
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
-          git add data/signal_history.csv
-          git diff --quiet && git diff --staged --quiet || (git commit -m "auto: update signal history log [skip ci]" && git push)
+          if [ -f "data/signal_history.csv" ]; then
+            git add data/signal_history.csv
+            git diff --quiet && git diff --staged --quiet || (git commit -m "auto: update signal history log [skip ci]" && git push)
+          fi
