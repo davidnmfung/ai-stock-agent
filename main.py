@@ -4,7 +4,11 @@ import os
 import sys
 import pytz
 import requests
+from src.tracker import SignalTracker
 import yfinance as yf
+
+# 初始化 SignalTracker
+tracker = SignalTracker()
 
 # ==================== 憑證與設定 ====================
 TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
@@ -140,7 +144,7 @@ def calculate_signal_strength(rvol: float, short_float_val: float) -> str:
   elif rvol >= 1.5:
     return "⚡ 中高 (標準突破)"
   else:
-    return "⚠️ 中等 (邊界訊號，留意量能延續性)"
+    return "⚠️️ 中等 (邊界訊號，留意量能延續性)"
 
 
 def get_best_options_advice(ticker: str, price: float) -> str:
@@ -196,7 +200,7 @@ def get_best_options_advice(ticker: str, price: float) -> str:
 
 
 def get_news(ticker: str):
-  """Finnhub 最新新聞」"""
+  """Finnhub 最新新聞"""
   news_list = []
   if not FINNHUB_API_KEY:
     return news_list
@@ -267,16 +271,28 @@ def fetch_stock_data(ticker: str):
 
 
 def run_breakout_scan(stock_metrics):
-  """產生 🚨 爆發股市場監控預警」"""
+  """產生 🚨 爆發股市場監控預警"""
   breakout_signals = []
   for data in stock_metrics:
     if data["rvol"] >= MIN_RVOL and data["gain_pct"] >= MIN_GAIN:
+      # 補充基本面資訊，以便一併記錄進 CSV
+      enriched = get_enriched_info(data["ticker"])
+      data["sector"] = enriched["sector"]
+      data["market_cap"] = enriched["market_cap"]
+      data["short_float"] = enriched["short_float"]
+      data["short_float_val"] = enriched["short_float_val"]
+      data["tv_url"] = enriched["tv_url"]
+      data["finviz_url"] = enriched["finviz_url"]
       breakout_signals.append(data)
 
   if not breakout_signals:
     print("ℹ️ 本輪未發現符合門檻 (RVOL≥1.3 & 漲幅≥1.5%) 之爆量突破標的。")
     return
 
+  # 1. 寫入歷史 Signal 紀錄庫 (用於 Forward Testing)
+  tracker.log_signals(breakout_signals)
+
+  # 2. 組合 Telegram 訊息格式並推播
   msg = "🚨 *AI 爆發股市場監控預警 (新起漲標的)*\n\n"
   msg += f"當前有 {len(breakout_signals)} 檔新標的符合爆量突破條件：\n\n"
 
@@ -286,19 +302,18 @@ def run_breakout_scan(stock_metrics):
     g = sig["gain_pct"]
     r = sig["rvol"]
 
-    enriched = get_enriched_info(t)
-    strength = calculate_signal_strength(r, enriched["short_float_val"])
+    strength = calculate_signal_strength(r, sig["short_float_val"])
     opt_advice = get_best_options_advice(t, p)
     news_items = get_news(t)
 
     msg += f"• *${t}* | 價格: `${p}` | 漲幅: `+{g}%` | RVOL: `{r}x`\n"
     msg += "  突破 MA20 均線，量能放大" f" {r} 倍，符合起漲訊號。\n"
     msg += (
-        f"  🏷️ *基本面*: 板塊 `{enriched['sector']}` | 市值"
-        f" `{enriched['market_cap']}`"
+        f"  🏷️ *基本面*: 板塊 `{sig['sector']}` | 市值"
+        f" `{sig['market_cap']}`"
     )
-    if enriched["short_float"] != "N/A":
-      msg += f" | 做空率 `{enriched['short_float']}`"
+    if sig["short_float"] != "N/A":
+      msg += f" | 做空率 `{sig['short_float']}`"
     msg += "\n"
     msg += f"  ⚡ *突破訊號強度*: {strength}\n"
     if opt_advice:
@@ -310,8 +325,8 @@ def run_breakout_scan(stock_metrics):
         msg += f"    • [{title}]({n_url})\n"
 
     msg += (
-        f"  🔗 [📈 TradingView 圖表]({enriched['tv_url']}) | [📊"
-        f" Finviz 分析]({enriched['finviz_url']})\n\n"
+        f"  🔗 [📈 TradingView 圖表]({sig['tv_url']}) | [📊"
+        f" Finviz 分析]({sig['finviz_url']})\n\n"
     )
 
   now_str = datetime.now(pytz.timezone("US/Eastern")).strftime(
@@ -320,7 +335,7 @@ def run_breakout_scan(stock_metrics):
   msg += f"⏰ *掃描時間*: {now_str}"
 
   send_telegram_message(msg)
-  print(f"✅ 成功推播 {len(breakout_signals)} 檔爆發股預警報告！")
+  print(f"✅ 成功推播 {len(breakout_signals)} 檔爆發股預警報告並紀錄至歷史資料庫！")
 
 
 def run_heartbeat_summary(stock_metrics):
@@ -328,11 +343,9 @@ def run_heartbeat_summary(stock_metrics):
   if not stock_metrics:
     return
 
-  # 按漲幅排序 Top 5
   top_gainers = sorted(stock_metrics, key=lambda x: x["gain_pct"], reverse=True)[
       :5
   ]
-  # 按 RVOL 排序 Top 5
   top_rvols = sorted(stock_metrics, key=lambda x: x["rvol"], reverse=True)[:5]
 
   now_str = datetime.now(pytz.timezone("US/Eastern")).strftime(
@@ -370,14 +383,13 @@ def main():
     print("💤 當前非美股交易時間，跳過本輪掃描。")
     sys.exit(0)
 
-  # 掃描 Watchlist 內的所有股票
   stock_metrics = []
   for ticker in CORE_WATCHLIST:
     data = fetch_stock_data(ticker)
     if data:
       stock_metrics.append(data)
 
-  # 1. 執行爆發股突破檢查
+  # 1. 執行爆發股突破檢查並記錄 Signal
   run_breakout_scan(stock_metrics)
 
   # 2. 每偶數小時的頭 10 分鐘（如 UTC 04:00, 06:00, 08:00 等）自動觸發心跳摘要
