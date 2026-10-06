@@ -39,3 +39,5 @@ Timestamp_EDT,Ticker,Entry_Price,Gain_Pct,RVOL,Sector,Short_Float,Status
 2026-10-05 21:45:43,WAY,26.48,5.79,1.84,Healthcare,9.1%,ACTIVE
 2026-10-05 21:45:43,CCL,25.56,-1.27,0.56,Consumer Cyclical,3.8%,ACTIVE
 2026-10-05 21:45:43,MGNI,24.96,-0.12,0.63,Communication Services,9.0%,ACTIVE
+2026-10-06 15:43:37,OKLO,38.7,3.56,1.63,Utilities,20.5%,ACTIVE
+2026-10-06 15:43:37,NBIS,249.85,5.32,1.37,Communication Services,19.8%,ACTIVE
