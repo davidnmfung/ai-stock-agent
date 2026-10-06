@@ -58,8 +58,9 @@ CORE_WATCHLIST = [
     "MGNI",
 ]
 
-MIN_RVOL = 1.3  # RVOL ≥ 1.3x 爆量
-MIN_GAIN = 1.5  # 漲幅 ≥ +1.5%
+# 🧪 測試模式門檻：調低以強制觸發測試報告（測試完成後恢復為 1.3 及 1.5）
+MIN_RVOL = 0.0  
+MIN_GAIN = -100.0  
 
 
 # ==================== 核心功能函數 ====================
@@ -278,17 +279,18 @@ def run_breakout_scan(stock_metrics):
       breakout_signals.append(data)
 
   if not breakout_signals:
-    print("ℹ️ 本輪未發現符合門檻 (RVOL≥1.3 & 漲幅≥1.5%) 之爆量突破標的。")
+    print("ℹ️ 本輪未發現符合門檻之爆量突破標的。")
     return
 
   # 1. 寫入歷史 Signal 紀錄庫 (用於 Forward Testing)
   tracker.log_signals(breakout_signals)
 
   # 2. 組合 Telegram 訊息格式並推播
-  msg = "🚨 *AI 爆發股市場監控預警 (新起漲標的)*\n\n"
-  msg += f"當前有 {len(breakout_signals)} 檔新標的符合爆量突破條件：\n\n"
+  msg = "🚨 *AI 爆發股市場監控預警 (測試推播)*\n\n"
+  msg += f"當前有 {len(breakout_signals)} 檔標的符合條件：\n\n"
 
-  for sig in breakout_signals:
+  # 限制最多推播前 5 檔，避免訊息過長
+  for sig in breakout_signals[:5]:
     t = sig["ticker"]
     p = sig["price"]
     g = sig["gain_pct"]
@@ -298,12 +300,8 @@ def run_breakout_scan(stock_metrics):
     opt_advice = get_best_options_advice(t, p)
     news_items = get_news(t)
 
-    msg += f"• *${t}* | 價格: `${p}` | 漲幅: `+{g}%` | RVOL: `{r}x`\n"
-    msg += "  突破 MA20 均線，量能放大" f" {r} 倍，符合起漲訊號。\n"
-    msg += (
-        f"  🏷️ *基本面*: 板塊 `{sig['sector']}` | 市值"
-        f" `{sig['market_cap']}`"
-    )
+    msg += f"• *${t}* | 價格: `${p}` | 漲幅: `{g}%` | RVOL: `{r}x`\n"
+    msg += f"  🏷️ *基本面*: 板塊 `{sig['sector']}` | 市值 `{sig['market_cap']}`"
     if sig["short_float"] != "N/A":
       msg += f" | 做空率 `{sig['short_float']}`"
     msg += "\n"
@@ -327,7 +325,7 @@ def run_breakout_scan(stock_metrics):
   msg += f"⏰ *掃描時間*: {now_str}"
 
   send_telegram_message(msg)
-  print(f"✅ 成功推播 {len(breakout_signals)} 檔爆發股預警報告並紀錄至歷史資料庫！")
+  print(f"✅ 成功推播 {len(breakout_signals)} 檔爆發股預警報告！")
 
 
 def run_heartbeat_summary(stock_metrics):
@@ -344,49 +342,4 @@ def run_heartbeat_summary(stock_metrics):
       "%Y-%m-%d %H:%M:%S"
   )
 
-  msg = "📊 【AI Stock Agent - 盤中熱門標的心跳摘要】\n"
-  msg += f"⏰ *統計時間*: {now_str}\n\n"
-
-  msg += "🚀 *漲幅領先 Top 5*:\n"
-  for s in top_gainers:
-    msg += (
-        f"• *${s['ticker']}*: `${s['price']}` | 漲幅: `{s['gain_pct']}%` | RVOL:"
-        f" `{s['rvol']}x`\n"
-    )
-
-  msg += "\n🔥 *量能爆發 Top 5*:\n"
-  for s in top_rvols:
-    msg += (
-        f"• *${s['ticker']}*: `${s['price']}` | RVOL: `{s['rvol']}x` | 漲幅:"
-        f" `{s['gain_pct']}%`\n"
-    )
-
-  send_telegram_message(msg)
-  print("✅ 成功推播盤中熱門標的心跳摘要報告！")
-
-
-# ==================== 主執行流程 ====================
-
-
-def main():
-  print("🚀 [GitHub Actions] 開始執行美股掃描任務 (測試模式)...")
-
-  if not is_us_market_hours():
-    print("💤 當前非美股交易時間，跳過本輪掃描。")
-    sys.exit(0)
-
-  stock_metrics = []
-  for ticker in CORE_WATCHLIST:
-    data = fetch_stock_data(ticker)
-    if data:
-      stock_metrics.append(data)
-
-  # 1. 執行爆發股突破檢查並記錄 Signal
-  run_breakout_scan(stock_metrics)
-
-  # 2. 強制測試：直接發送心跳摘要報告
-  run_heartbeat_summary(stock_metrics)
-
-
-if __name__ == "__main__":
-  main()
+  msg = "📊 【AI Stock Agent - 盤中熱門標的心
