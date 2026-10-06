@@ -66,15 +66,8 @@ MIN_GAIN = 1.5  # 漲幅 ≥ +1.5%
 
 
 def is_us_market_hours() -> bool:
-  """判斷是否為美股交易時段（美東 04:00 - 20:00）"""
-  try:
-    tz = pytz.timezone("US/Eastern")
-    now = datetime.now(tz)
-    if now.weekday() >= 5:  # 週末不執行
-      return False
-    return 4 <= now.hour < 20
-  except Exception:
-    return True
+  """判斷是否為美股交易時段（🧪 強制測試模式：永遠返回 True）"""
+  return True
 
 
 def send_telegram_message(message: str):
@@ -144,7 +137,7 @@ def calculate_signal_strength(rvol: float, short_float_val: float) -> str:
   elif rvol >= 1.5:
     return "⚡ 中高 (標準突破)"
   else:
-    return "⚠️️ 中等 (邊界訊號，留意量能延續性)"
+    return "⚠ 中等 (邊界訊號，留意量能延續性)"
 
 
 def get_best_options_advice(ticker: str, price: float) -> str:
@@ -275,7 +268,6 @@ def run_breakout_scan(stock_metrics):
   breakout_signals = []
   for data in stock_metrics:
     if data["rvol"] >= MIN_RVOL and data["gain_pct"] >= MIN_GAIN:
-      # 補充基本面資訊，以便一併記錄進 CSV
       enriched = get_enriched_info(data["ticker"])
       data["sector"] = enriched["sector"]
       data["market_cap"] = enriched["market_cap"]
@@ -339,7 +331,7 @@ def run_breakout_scan(stock_metrics):
 
 
 def run_heartbeat_summary(stock_metrics):
-  """產生 📊 盤中熱門標的心跳摘要 (每 2 小時觸發一次)"""
+  """產生 📊 盤中熱門標的心跳摘要"""
   if not stock_metrics:
     return
 
@@ -377,7 +369,7 @@ def run_heartbeat_summary(stock_metrics):
 
 
 def main():
-  print("🚀 [GitHub Actions] 開始執行美股掃描任務...")
+  print("🚀 [GitHub Actions] 開始執行美股掃描任務 (測試模式)...")
 
   if not is_us_market_hours():
     print("💤 當前非美股交易時間，跳過本輪掃描。")
@@ -392,10 +384,8 @@ def main():
   # 1. 執行爆發股突破檢查並記錄 Signal
   run_breakout_scan(stock_metrics)
 
-  # 2. 每偶數小時的頭 10 分鐘（如 UTC 04:00, 06:00, 08:00 等）自動觸發心跳摘要
-  now_utc = datetime.now(pytz.utc)
-  if now_utc.hour % 2 == 0 and now_utc.minute < 10:
-    run_heartbeat_summary(stock_metrics)
+  # 2. 強制測試：直接發送心跳摘要報告
+  run_heartbeat_summary(stock_metrics)
 
 
 if __name__ == "__main__":
