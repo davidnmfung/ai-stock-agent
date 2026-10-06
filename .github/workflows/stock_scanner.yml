@@ -6,6 +6,9 @@ on:
     - cron: "*/5 * * * 1-5"
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   scan:
     runs-on: ubuntu-latest
@@ -31,3 +34,10 @@ jobs:
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
           FINNHUB_API_KEY: ${{ secrets.FINNHUB_API_KEY }}
         run: python main.py
+
+      - name: Commit and push updated signal history
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add data/signal_history.csv
+          git diff --quiet && git diff --staged --quiet || (git commit -m "auto: update signal history log [skip ci]" && git push)
