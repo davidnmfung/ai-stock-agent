@@ -58,9 +58,9 @@ CORE_WATCHLIST = [
     "MGNI",
 ]
 
-# 🧪 測試模式門檻：調低以強制觸發測試報告（測試完成後恢復為 1.3 及 1.5）
-MIN_RVOL = 0.0  
-MIN_GAIN = -100.0  
+# 🧪 測試模式門檻：暫時降至 lowest 門檻以強制觸發測試推播
+MIN_RVOL = 0.0
+MIN_GAIN = -100.0
 
 
 # ==================== 核心功能函數 ====================
@@ -187,7 +187,7 @@ def get_best_options_advice(ticker: str, price: float) -> str:
 
     return (
         f"  💡 *期權策略建議 (到期日 {target_exp})*: 首選 `${strike} Call`"
-        f" {type_str} | 賣價 `${ask}` | 成交量 `{vol}`。{advice}\n"
+        f" {type_str} | 賣價 `${ask}` | 成交量 `{vol}`。\n"
     )
   except Exception:
     return ""
@@ -282,14 +282,11 @@ def run_breakout_scan(stock_metrics):
     print("ℹ️ 本輪未發現符合門檻之爆量突破標的。")
     return
 
-  # 1. 寫入歷史 Signal 紀錄庫 (用於 Forward Testing)
   tracker.log_signals(breakout_signals)
 
-  # 2. 組合 Telegram 訊息格式並推播
   msg = "🚨 *AI 爆發股市場監控預警 (測試推播)*\n\n"
   msg += f"當前有 {len(breakout_signals)} 檔標的符合條件：\n\n"
 
-  # 限制最多推播前 5 檔，避免訊息過長
   for sig in breakout_signals[:5]:
     t = sig["ticker"]
     p = sig["price"]
@@ -342,4 +339,46 @@ def run_heartbeat_summary(stock_metrics):
       "%Y-%m-%d %H:%M:%S"
   )
 
-  msg = "📊 【AI Stock Agent - 盤中熱門標的心
+  msg = "📊 【AI Stock Agent - 盤中熱門標的心跳摘要】\n"
+  msg += f"⏰ *統計時間*: {now_str}\n\n"
+
+  msg += "🚀 *漲幅領先 Top 5*:\n"
+  for s in top_gainers:
+    msg += (
+        f"• *${s['ticker']}*: `${s['price']}` | 漲幅: `{s['gain_pct']}%` | RVOL:"
+        f" `{s['rvol']}x`\n"
+    )
+
+  msg += "\n🔥 *量能爆發 Top 5*:\n"
+  for s in top_rvols:
+    msg += (
+        f"• *${s['ticker']}*: `${s['price']}` | RVOL: `{s['rvol']}x` | 漲幅:"
+        f" `{s['gain_pct']}%`\n"
+    )
+
+  send_telegram_message(msg)
+  print("✅ 成功推播盤中熱門標的心跳摘要報告！")
+
+
+# ==================== 主執行流程 ====================
+
+
+def main():
+  print("🚀 [GitHub Actions] 開始執行美股掃描任務 (測試模式)...")
+
+  if not is_us_market_hours():
+    print("💤 當前非美股交易時間，跳過本輪掃描。")
+    sys.exit(0)
+
+  stock_metrics = []
+  for ticker in CORE_WATCHLIST:
+    data = fetch_stock_data(ticker)
+    if data:
+      stock_metrics.append(data)
+
+  run_breakout_scan(stock_metrics)
+  run_heartbeat_summary(stock_metrics)
+
+
+if __name__ == "__main__":
+  main()
