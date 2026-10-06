@@ -58,17 +58,23 @@ CORE_WATCHLIST = [
     "MGNI",
 ]
 
-# 🧪 測試模式門檻：暫時降至 lowest 門檻以強制觸發測試推播
-MIN_RVOL = 0.0
-MIN_GAIN = -100.0
+# 正式監控門檻
+MIN_RVOL = 1.3
+MIN_GAIN = 1.5
 
 
 # ==================== 核心功能函數 ====================
 
 
 def is_us_market_hours() -> bool:
-  """判斷是否為美股交易時段（🧪 強制測試模式：永遠返回 True）"""
-  return True
+  """判斷當前是否為美股常規交易時段（美東時間 09:30 - 16:00，週一至週五）"""
+  tz = pytz.timezone("US/Eastern")
+  now = datetime.now(tz)
+  if now.weekday() >= 5:  # 週六與週日
+    return False
+  market_open = now.replace(hour=9, minute=30, second=0, microsecond=0)
+  market_close = now.replace(hour=16, minute=0, second=0, microsecond=0)
+  return market_open <= now <= market_close
 
 
 def send_telegram_message(message: str):
@@ -284,7 +290,7 @@ def run_breakout_scan(stock_metrics):
 
   tracker.log_signals(breakout_signals)
 
-  msg = "🚨 *AI 爆發股市場監控預警 (測試推播)*\n\n"
+  msg = "🚨 *AI 爆發股市場監控預警*\n\n"
   msg += f"當前有 {len(breakout_signals)} 檔標的符合條件：\n\n"
 
   for sig in breakout_signals[:5]:
@@ -364,7 +370,7 @@ def run_heartbeat_summary(stock_metrics):
 
 
 def main():
-  print("🚀 [GitHub Actions] 開始執行美股掃描任務 (測試模式)...")
+  print("🚀 [GitHub Actions] 開始執行美股掃描任務...")
 
   if not is_us_market_hours():
     print("💤 當前非美股交易時間，跳過本輪掃描。")
