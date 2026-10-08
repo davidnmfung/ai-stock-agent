@@ -4,16 +4,21 @@ import os
 import sys
 import pytz
 import requests
-from src.tracker import SignalTracker
 import yfinance as yf
+from src.tracker import SignalTracker
 
 # 初始化 SignalTracker
 tracker = SignalTracker()
 
 # ==================== 憑證與設定 ====================
-TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
-TELEGRAM_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID")
-FINNHUB_API_KEY = os.getenv("FINNHUB_API_KEY")
+RAW_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN", "").strip()
+# 自動清理 Token：若包含 'bot' 前綴則自動去除，防止組出 /botbot... 導致 404 錯誤
+TELEGRAM_BOT_TOKEN = (
+    RAW_BOT_TOKEN[3:] if RAW_BOT_TOKEN.startswith("bot") else RAW_BOT_TOKEN
+)
+
+TELEGRAM_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID", "").strip()
+FINNHUB_API_KEY = os.getenv("FINNHUB_API_KEY", "").strip()
 
 CORE_WATCHLIST = [
     "SMCX",
@@ -70,23 +75,32 @@ def is_us_market_hours() -> bool:
   """判斷當前是否為美股常規交易時段（美東時間 09:30 - 16:00，週一至週五）"""
   tz = pytz.timezone("US/Eastern")
   now = datetime.now(tz)
-  if now.weekday() >= 5:  # 週六與週日
+  print(f"🕒 當前美東時間: {now.strftime('%Y-%m-%d %H:%M:%S %Z')}")
+
+  if now.weekday() >= 5:  # 週六 (5) 與週日 (6)
+    print("💤 今日為週末，非美股交易日。")
     return False
+
   market_open = now.replace(hour=9, minute=30, second=0, microsecond=0)
   market_close = now.replace(hour=16, minute=0, second=0, microsecond=0)
-  return market_open <= now <= market_close
+
+  is_open = market_open <= now <= market_close
+  if not is_open:
+    print("💤 當前非美股交易時間 (09:30 - 16:00 EDT)。")
+  return is_open
 
 
 def send_telegram_message(message: str):
   """發送訊息至 Telegram 群組"""
   if not TELEGRAM_BOT_TOKEN or not TELEGRAM_CHAT_ID:
-    print("❌ 缺少 Telegram 憑證，無法發送訊息。")
-    return
+    print("❌ 錯誤: 缺少 TELEGRAM_BOT_TOKEN 或 TELEGRAM_CHAT_ID Secrets。")
+    return False
 
   url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage"
   MAX_CHAR = 3500
   chunks = [message[i : i + MAX_CHAR] for i in range(0, len(message), MAX_CHAR)]
 
+  success = True
   for chunk in chunks:
     payload = {
         "chat_id": TELEGRAM_CHAT_ID,
@@ -99,6 +113,11 @@ def send_telegram_message(message: str):
       res.raise_for_status()
     except Exception as e:
       print(f"❌ Telegram 發送失敗: {e}")
+      if hasattr(e, "response") and e.response is not None:
+        print(f"   響應內容: {e.response.text}")
+      success = False
+
+  return success
 
 
 def get_enriched_info(ticker: str):
@@ -183,13 +202,10 @@ def get_best_options_advice(ticker: str, price: float) -> str:
 
     if strike < price:
       type_str = "(價內)"
-      advice = "Delta 較高，保護性好，適合鎖定波段漲幅。"
     elif abs(strike - price) / price <= 0.03:
       type_str = "(價平)"
-      advice = "權利金適中，適合小資金博短線爆發。"
     else:
       type_str = "(價外)"
-      advice = "槓桿較大，需留意倒數時間價值 (Theta) 衰退風險。"
 
     return (
         f"  💡 *期權策略建議 (到期日 {target_exp})*: 首選 `${strike} Call`"
@@ -230,7 +246,7 @@ def get_news(ticker: str):
 
 
 def fetch_stock_data(ticker: str):
-  """獲取單檔股票實時數據（防 NaN 機制）"""
+  """獲取單檔股票實時數據（防 NaN 及網路異常處理）"""
   try:
     stock = yf.Ticker(ticker)
     df = stock.history(period="1mo", interval="1d")
@@ -263,7 +279,8 @@ def fetch_stock_data(ticker: str):
         "gain_pct": round(gain_pct, 2),
         "rvol": round(rvol, 2),
     }
-  except Exception:
+  except Exception as e:
+    print(f"⚠️ 無法取得 {ticker} 數據: {e}")
     return None
 
 
@@ -285,7 +302,7 @@ def run_breakout_scan(stock_metrics):
       breakout_signals.append(data)
 
   if not breakout_signals:
-    print("ℹ️ 本輪未發現符合門檻之爆量突破標的。")
+    print("ℹ️ 本輪未發現符合門檻 (RVOL>=1.3, Gain>=1.5%) 之爆量突破標的。")
     return
 
   tracker.log_signals(breakout_signals)
@@ -327,13 +344,14 @@ def run_breakout_scan(stock_metrics):
   )
   msg += f"⏰ *掃描時間*: {now_str}"
 
-  send_telegram_message(msg)
-  print(f"✅ 成功推播 {len(breakout_signals)} 檔爆發股預警報告！")
+  if send_telegram_message(msg):
+    print(f"✅ 成功推播 {len(breakout_signals)} 檔爆發股預警報告！")
 
 
 def run_heartbeat_summary(stock_metrics):
   """產生 📊 盤中熱門標的心跳摘要"""
   if not stock_metrics:
+    print("⚠️ 沒有可用的股票數據，跳過心跳摘要推播。")
     return
 
   top_gainers = sorted(stock_metrics, key=lambda x: x["gain_pct"], reverse=True)[
@@ -362,8 +380,8 @@ def run_heartbeat_summary(stock_metrics):
         f" `{s['gain_pct']}%`\n"
     )
 
-  send_telegram_message(msg)
-  print("✅ 成功推播盤中熱門標的心跳摘要報告！")
+  if send_telegram_message(msg):
+    print("✅ 成功推播盤中熱門標的心跳摘要報告！")
 
 
 # ==================== 主執行流程 ====================
@@ -373,7 +391,7 @@ def main():
   print("🚀 [GitHub Actions] 開始執行美股掃描任務...")
 
   if not is_us_market_hours():
-    print("💤 當前非美股交易時間，跳過本輪掃描。")
+    print("💤 非美股交易時間，跳過本輪掃描。")
     sys.exit(0)
 
   stock_metrics = []
@@ -381,6 +399,12 @@ def main():
     data = fetch_stock_data(ticker)
     if data:
       stock_metrics.append(data)
+
+  print(f"📊 成功擷取 {len(stock_metrics)} / {len(CORE_WATCHLIST)} 檔標的數據")
+
+  if not stock_metrics:
+    print("❌ 警告: 所有標的均未能取得數據，可能受到 Yahoo Finance Rate Limit 限制。")
+    sys.exit(1)
 
   run_breakout_scan(stock_metrics)
   run_heartbeat_summary(stock_metrics)
