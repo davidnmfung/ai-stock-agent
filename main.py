@@ -12,7 +12,6 @@ tracker = SignalTracker()
 
 # ==================== 憑證與設定 ====================
 RAW_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN", "").strip()
-# 自動清理 Token：若包含 'bot' 前綴則自動去除，防止組出 /botbot... 導致 404 錯誤
 TELEGRAM_BOT_TOKEN = (
     RAW_BOT_TOKEN[3:] if RAW_BOT_TOKEN.startswith("bot") else RAW_BOT_TOKEN
 )
@@ -63,9 +62,12 @@ CORE_WATCHLIST = [
     "MGNI",
 ]
 
-# 正式監控門檻
-MIN_RVOL = 1.3
-MIN_GAIN = 1.5
+# ==================== 量化篩選門檻 (Phase 1 升級) ====================
+MIN_RVOL = 1.3  # 相對成交量比率 >= 1.3x
+MIN_GAIN = 1.5  # 當日漲幅 >= 1.5%
+MIN_DOLLAR_VOL = 10_000_000  # 最低成交金額 >= $10M (過濾低流動性陷阱)
+MIN_INTRADAY_LOC = 0.70  # 收盤/現價需位居當日振幅 Top 30% (過濾長上影線)
+MIN_ATR_RATIO = 1.2  # 當日振幅需達 14日平均 ATR 的 1.2 倍以上 (波動率真實擴張)
 
 
 # ==================== 核心功能函數 ====================
@@ -154,16 +156,18 @@ def get_enriched_info(ticker: str):
   return info_data
 
 
-def calculate_signal_strength(rvol: float, short_float_val: float) -> str:
-  """突破訊號強度試算"""
-  if rvol >= 2.5 or (rvol >= 1.8 and short_float_val >= 10.0):
-    return "🔥 極強 (機構爆量/軋空雙驅動)"
+def calculate_signal_strength(
+    rvol: float, short_float_val: float, atr_ratio: float
+) -> str:
+  """突破訊號強度試算（結合 RVOL、軋空率與 ATR 擴張度）"""
+  if rvol >= 2.5 and atr_ratio >= 1.5:
+    return "🔥 極強 (機構爆量/波動率強勢擴張)"
   elif rvol >= 1.8 or short_float_val >= 10.0:
-    return "⚡ 強 (動能起漲標的)"
-  elif rvol >= 1.5:
-    return "⚡ 中高 (標準突破)"
+    return "⚡ 強 (潛在軋空與動能標的)"
+  elif rvol >= 1.3 and atr_ratio >= 1.2:
+    return "⚡ 中高 (標準品質突破)"
   else:
-    return "⚠ 中等 (邊界訊號，留意量能延續性)"
+    return "⚠ 中等 (符合邊界門檻，留意續航力)"
 
 
 def get_best_options_advice(ticker: str, price: float) -> str:
@@ -200,13 +204,11 @@ def get_best_options_advice(ticker: str, price: float) -> str:
         else 0
     )
 
-    if strike < price:
-      type_str = "(價內)"
-    elif abs(strike - price) / price <= 0.03:
-      type_str = "(價平)"
-    else:
-      type_str = "(價外)"
-
+    type_str = (
+        "(價內)"
+        if strike < price
+        else ("(價平)" if abs(strike - price) / price <= 0.03 else "(價外)")
+    )
     return (
         f"  💡 *期權策略建議 (到期日 {target_exp})*: 首選 `${strike} Call`"
         f" {type_str} | 賣價 `${ask}` | 成交量 `{vol}`。\n"
@@ -246,15 +248,18 @@ def get_news(ticker: str):
 
 
 def fetch_stock_data(ticker: str):
-  """獲取單檔股票實時數據（防 NaN 及網路異常處理）"""
+  """獲取單檔股票實時數據（包含 ATR14、Dollar Volume 與 Intraday Location）"""
   try:
     stock = yf.Ticker(ticker)
-    df = stock.history(period="1mo", interval="1d")
+    df = stock.history(period="2mo", interval="1d")
     if len(df) < 20:
       return None
 
     latest_price = df["Close"].iloc[-1]
     open_price = df["Open"].iloc[-1]
+    day_high = df["High"].iloc[-1]
+    day_low = df["Low"].iloc[-1]
+    curr_vol = df["Volume"].iloc[-1]
 
     if (
         open_price == 0
@@ -266,18 +271,37 @@ def fetch_stock_data(ticker: str):
 
     gain_pct = ((latest_price - open_price) / open_price) * 100
     vol_avg_5d = df["Volume"].iloc[-6:-1].mean()
-    curr_vol = df["Volume"].iloc[-1]
 
     if math.isnan(gain_pct) or math.isnan(curr_vol):
       return None
 
     rvol = (curr_vol / vol_avg_5d) if vol_avg_5d > 0 else 0
+    dollar_vol = latest_price * curr_vol
+
+    # 計算 Intraday Location (當前價格處於當日高低振幅的比例)
+    day_range = day_high - day_low
+    intraday_loc = (
+        (latest_price - day_low) / day_range if day_range > 0 else 0.0
+    )
+
+    # 計算 14-day ATR (True Range)
+    df["prev_close"] = df["Close"].shift(1)
+    df["tr1"] = df["High"] - df["Low"]
+    df["tr2"] = (df["High"] - df["prev_close"]).abs()
+    df["tr3"] = (df["Low"] - df["prev_close"]).abs()
+    df["tr"] = df[["tr1", "tr2", "tr3"]].max(axis=1)
+    atr14 = df["tr"].iloc[-15:-1].mean()
+
+    atr_ratio = (day_range / atr14) if (atr14 and atr14 > 0) else 0.0
 
     return {
         "ticker": ticker,
         "price": round(latest_price, 2),
         "gain_pct": round(gain_pct, 2),
         "rvol": round(rvol, 2),
+        "dollar_vol": round(dollar_vol, 0),
+        "intraday_loc": round(intraday_loc, 2),
+        "atr_ratio": round(atr_ratio, 2),
     }
   except Exception as e:
     print(f"⚠️ 無法取得 {ticker} 數據: {e}")
@@ -288,10 +312,18 @@ def fetch_stock_data(ticker: str):
 
 
 def run_breakout_scan(stock_metrics):
-  """產生 🚨 爆發股市場監控預警"""
+  """產生 🚨 爆發股市場監控預警 (套用進階技術面過濾器)"""
   breakout_signals = []
   for data in stock_metrics:
-    if data["rvol"] >= MIN_RVOL and data["gain_pct"] >= MIN_GAIN:
+    # 嚴格驗證五大量化篩選指標
+    if (
+        data["rvol"] >= MIN_RVOL
+        and data["gain_pct"] >= MIN_GAIN
+        and data["dollar_vol"] >= MIN_DOLLAR_VOL
+        and data["intraday_loc"] >= MIN_INTRADAY_LOC
+        and data["atr_ratio"] >= MIN_ATR_RATIO
+    ):
+
       enriched = get_enriched_info(data["ticker"])
       data["sector"] = enriched["sector"]
       data["market_cap"] = enriched["market_cap"]
@@ -302,30 +334,40 @@ def run_breakout_scan(stock_metrics):
       breakout_signals.append(data)
 
   if not breakout_signals:
-    print("ℹ️ 本輪未發現符合門檻 (RVOL>=1.3, Gain>=1.5%) 之爆量突破標的。")
+    print(
+        "ℹ️ 本輪未發現符合進階量化門檻 (RVOL>=1.3, Gain>=1.5%, $Vol>=$10M,"
+        " Loc>=0.7, ATR_Ratio>=1.2) 之高品質突破標的。"
+    )
     return
 
   tracker.log_signals(breakout_signals)
 
-  msg = "🚨 *AI 爆發股市場監控預警*\n\n"
-  msg += f"當前有 {len(breakout_signals)} 檔標的符合條件：\n\n"
+  msg = "🚨 *AI 高品質爆發股預警 (已過濾雜訊)*\n\n"
+  msg += f"當前有 {len(breakout_signals)} 檔標的符合量化突破條件：\n\n"
 
   for sig in breakout_signals[:5]:
     t = sig["ticker"]
     p = sig["price"]
     g = sig["gain_pct"]
     r = sig["rvol"]
+    d_vol_m = sig["dollar_vol"] / 1e6
+    loc_pct = int(sig["intraday_loc"] * 100)
+    atr_r = sig["atr_ratio"]
 
-    strength = calculate_signal_strength(r, sig["short_float_val"])
+    strength = calculate_signal_strength(r, sig["short_float_val"], atr_r)
     opt_advice = get_best_options_advice(t, p)
     news_items = get_news(t)
 
     msg += f"• *${t}* | 價格: `${p}` | 漲幅: `{g}%` | RVOL: `{r}x`\n"
+    msg += (
+        f"  📊 *動能指標*: 成交額 `${d_vol_m:.1f}M` | 高點位置 `{loc_pct}%` |"
+        f" ATR擴張 `{atr_r}x`\n"
+    )
     msg += f"  🏷️ *基本面*: 板塊 `{sig['sector']}` | 市值 `{sig['market_cap']}`"
     if sig["short_float"] != "N/A":
       msg += f" | 做空率 `{sig['short_float']}`"
     msg += "\n"
-    msg += f"  ⚡ *突破訊號強度*: {strength}\n"
+    msg += f"  ⚡ *訊號品質*: {strength}\n"
     if opt_advice:
       msg += opt_advice
 
@@ -345,7 +387,7 @@ def run_breakout_scan(stock_metrics):
   msg += f"⏰ *掃描時間*: {now_str}"
 
   if send_telegram_message(msg):
-    print(f"✅ 成功推播 {len(breakout_signals)} 檔爆發股預警報告！")
+    print(f"✅ 成功推播 {len(breakout_signals)} 檔高品質爆發股預警報告！")
 
 
 def run_heartbeat_summary(stock_metrics):
