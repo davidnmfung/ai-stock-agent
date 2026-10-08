@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta
+import json
 import math
 import os
 import sys
@@ -18,6 +19,7 @@ TELEGRAM_BOT_TOKEN = (
 
 TELEGRAM_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID", "").strip()
 FINNHUB_API_KEY = os.getenv("FINNHUB_API_KEY", "").strip()
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "").strip()
 
 CORE_WATCHLIST = [
     "SMCX",
@@ -62,7 +64,7 @@ CORE_WATCHLIST = [
     "MGNI",
 ]
 
-# ==================== 量化篩選門檻 (Phase 1 升級) ====================
+# ==================== 量化篩選門檻 (Phase 1 & Phase 2) ====================
 MIN_RVOL = 1.3  # 相對成交量比率 >= 1.3x
 MIN_GAIN = 1.5  # 當日漲幅 >= 1.5%
 MIN_DOLLAR_VOL = 10_000_000  # 最低成交金額 >= $10M (過濾低流動性陷阱)
@@ -122,6 +124,52 @@ def send_telegram_message(message: str):
   return success
 
 
+def analyze_news_sentiment(ticker: str, news_items: list) -> dict:
+  """利用 Gemini 1.5 Flash 進行新聞情緒與利多催化劑分析"""
+  default_result = {"score": 5.0, "summary": "無顯著即時新聞催化劑"}
+  if not GEMINI_API_KEY or not news_items:
+    return default_result
+
+  news_text = "\n".join([f"- {title}" for title, _ in news_items])
+  prompt = f"""你是一位專業的美股量化分析師。請分析以下關於美股 ${ticker} 的最新新聞標題，評估其對個股當日爆量突破的利多強弱。
+
+新聞列表：
+{news_text}
+
+請嚴格輸出符合以下格式的 JSON 物件（不要包含任何其他文字或 Markdown 標籤）：
+{{
+  "sentiment_score": 8.5,
+  "catalyst_summary": "一句话繁體中文摘要，說明主要利多或利空原因"
+}}
+
+評分標準（1.0 ~ 10.0）：
+- 1.0~4.0 分：利空或陷阱（例如：折價增發、股權稀釋、高管拋售、評級下調）。
+- 5.0~6.5 分：中立或常規新聞（例如：一般市場觀點、無實質突破）。
+- 7.0~10.0 分：強勁利多（例如：財報遠超預期、上調展望、重大商業訂單、FDA 批准）。
+"""
+
+  url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={GEMINI_API_KEY}"
+  payload = {
+      "contents": [{"parts": [{"text": prompt}]}],
+      "generationConfig": {"response_mime_type": "application/json"},
+  }
+
+  try:
+    res = requests.post(url, json=payload, timeout=8)
+    if res.status_code == 200:
+      res_json = res.json()
+      content_str = res_json["candidates"][0]["content"]["parts"][0]["text"]
+      data = json.loads(content_str)
+      return {
+          "score": round(float(data.get("sentiment_score", 5.0)), 1),
+          "summary": data.get("catalyst_summary", "新聞解析 completed"),
+      }
+  except Exception as e:
+    print(f"⚠️ Gemini 新聞情緒分析異常 (${ticker}): {e}")
+
+  return default_result
+
+
 def get_enriched_info(ticker: str):
   """基本面數據（板塊、市值、做空率）"""
   info_data = {
@@ -157,11 +205,13 @@ def get_enriched_info(ticker: str):
 
 
 def calculate_signal_strength(
-    rvol: float, short_float_val: float, atr_ratio: float
+    rvol: float, short_float_val: float, atr_ratio: float, sentiment_score: float
 ) -> str:
-  """突破訊號強度試算（結合 RVOL、軋空率與 ATR 擴張度）"""
-  if rvol >= 2.5 and atr_ratio >= 1.5:
-    return "🔥 極強 (機構爆量/波動率強勢擴張)"
+  """突破訊號強度試算（結合 RVOL、軋空率、ATR 擴張度與 Gemini AI 催化劑評分）"""
+  if sentiment_score >= 7.5 and (rvol >= 2.0 or atr_ratio >= 1.5):
+    return "🔥 極強 (AI強利多驅動 + 機構爆量突破)"
+  elif sentiment_score <= 4.0:
+    return "⚠️ 警告 (技術面突破但 AI 判定包含潛在利空)"
   elif rvol >= 1.8 or short_float_val >= 10.0:
     return "⚡ 強 (潛在軋空與動能標的)"
   elif rvol >= 1.3 and atr_ratio >= 1.2:
@@ -312,7 +362,7 @@ def fetch_stock_data(ticker: str):
 
 
 def run_breakout_scan(stock_metrics):
-  """產生 🚨 爆發股市場監控預警 (套用進階技術面過濾器)"""
+  """產生 🚨 爆發股市場監控預警 (結合技術面過濾器與 Gemini AI 新聞分析)"""
   breakout_signals = []
   for data in stock_metrics:
     # 嚴格驗證五大量化篩選指標
@@ -342,8 +392,8 @@ def run_breakout_scan(stock_metrics):
 
   tracker.log_signals(breakout_signals)
 
-  msg = "🚨 *AI 高品質爆發股預警 (已過濾雜訊)*\n\n"
-  msg += f"當前有 {len(breakout_signals)} 檔標的符合量化突破條件：\n\n"
+  msg = "🚨 *AI 高品質爆發股預警 (Gemini 催化劑加持)*\n\n"
+  msg += f"當前有 {len(breakout_signals)} 檔標的符合條件：\n\n"
 
   for sig in breakout_signals[:5]:
     t = sig["ticker"]
@@ -354,20 +404,31 @@ def run_breakout_scan(stock_metrics):
     loc_pct = int(sig["intraday_loc"] * 100)
     atr_r = sig["atr_ratio"]
 
-    strength = calculate_signal_strength(r, sig["short_float_val"], atr_r)
-    opt_advice = get_best_options_advice(t, p)
+    # 擷取新聞並進行 Gemini AI 催化劑評分
     news_items = get_news(t)
+    ai_analysis = analyze_news_sentiment(t, news_items)
+    ai_score = ai_analysis["score"]
+    ai_summary = ai_analysis["summary"]
+
+    strength = calculate_signal_strength(
+        r, sig["short_float_val"], atr_r, ai_score
+    )
+    opt_advice = get_best_options_advice(t, p)
 
     msg += f"• *${t}* | 價格: `${p}` | 漲幅: `{g}%` | RVOL: `{r}x`\n"
     msg += (
-        f"  📊 *動能指標*: 成交額 `${d_vol_m:.1f}M` | 高點位置 `{loc_pct}%` |"
+        f"  📊 *量化指標*: 成交額 `${d_vol_m:.1f}M` | 高點位置 `{loc_pct}%` |"
         f" ATR擴張 `{atr_r}x`\n"
     )
     msg += f"  🏷️ *基本面*: 板塊 `{sig['sector']}` | 市值 `{sig['market_cap']}`"
     if sig["short_float"] != "N/A":
       msg += f" | 做空率 `{sig['short_float']}`"
     msg += "\n"
+    msg += (
+        f"  🧠 *Gemini AI 催化劑評分*: `{ai_score}/10` — _{ai_summary}_\n"
+    )
     msg += f"  ⚡ *訊號品質*: {strength}\n"
+
     if opt_advice:
       msg += opt_advice
 
@@ -387,7 +448,7 @@ def run_breakout_scan(stock_metrics):
   msg += f"⏰ *掃描時間*: {now_str}"
 
   if send_telegram_message(msg):
-    print(f"✅ 成功推播 {len(breakout_signals)} 檔高品質爆發股預警報告！")
+    print(f"✅ 成功推播 {len(breakout_signals)} 檔 Gemini 加持爆發股預警報告！")
 
 
 def run_heartbeat_summary(stock_metrics):
