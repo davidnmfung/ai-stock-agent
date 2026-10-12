@@ -415,7 +415,7 @@ def run_breakout_scan(stock_metrics):
     )
     opt_advice = get_best_options_advice(t, p)
 
-    msg += f"• *${t}* | 價格: `${p}` | 漲幅: `{g}%` | RVOL: `{r}x`\n"
+    msg += f"• *${t}* | 價格: `{p}` | 漲幅: `{g}%` | RVOL: `{r}x`\n"
     msg += (
         f"  📊 *量化指標*: 成交額 `${d_vol_m:.1f}M` | 高點位置 `{loc_pct}%` |"
         f" ATR擴張 `{atr_r}x`\n"
@@ -493,9 +493,10 @@ def run_heartbeat_summary(stock_metrics):
 def main():
   print("🚀 [GitHub Actions] 開始執行美股掃描任務...")
 
-  if not is_us_market_hours():
-    print("💤 非美股交易時間，跳過本輪掃描。")
-    sys.exit(0)
+  # 移除美股交易時間限制，確保任何時刻手動觸發或排程都能完整執行
+  # if not is_us_market_hours():
+  #     print("💤 非美股交易時間，跳過本輪掃描。")
+  #     sys.exit(0)
 
   stock_metrics = []
   for ticker in CORE_WATCHLIST:
