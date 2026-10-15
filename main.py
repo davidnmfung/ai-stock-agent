@@ -145,39 +145,27 @@ def analyze_news_sentiment(ticker: str, news_items: list) -> dict:
 
 
 def fetch_top_market_gainers():
-    """抓取全美股市場當日漲幅前 10 大標的（排除市值過小與流動性差的標的）"""
-    print("🔍 正在檢索全美股市場當日 Top 10 飆股榜...")
+    """透過 Yahoo Finance 官方公開 API 抓取全美股當日真實 Top 10 漲幅榜"""
+    print("🔍 正在檢索全美股市場當日真實 Top 10 飆股榜...")
+    gainers_tickers = []
     try:
-        s = yf.Sector("technology")  # 使用 yfinance 內建預設熱門榜或 Screener
-        # 若需要更全面的 Screener，也可直接利用 day_gainers 模式
-        gainers_tickers = []
-        
-        # 使用 yfinance 最新 Screener 語法
-        from yfinance import Screener
-        sc = Screener()
-        sc.set_body({
-            "size": 10,
-            "offset": 0,
-            "sortField": "percentchange",
-            "sortType": "DESC",
-            "quoteType": "EQUITY",
-            "query": {
-                "operator": "AND",
-                "operands": [
-                    {"operator": "GreaterThan", "operands": ["intradaymarketcap", 100000000]},  # 市值 > $100M
-                    {"operator": "GreaterThan", "operands": ["dayvolume", 500000]}             # 成交量 > 500k
-                ]
-            }
-        })
-        res = sc.response
-        if res and "quotes" in res:
-            for q in res["quotes"]:
-                gainers_tickers.append(q.get("symbol"))
+        url = "https://query1.finance.yahoo.com/v1/finance/screener/predefined/saved?scrIds=day_gainers&count=10"
+        headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"}
+        res = requests.get(url, headers=headers, timeout=5)
+        if res.status_code == 200:
+            data = res.json()
+            quotes = data.get("finance", {}).get("result", [{}])[0].get("quotes", [])
+            for q in quotes:
+                symbol = q.get("symbol")
+                if symbol and "." not in symbol and "-" not in symbol:
+                    gainers_tickers.append(symbol)
     except Exception as e:
-        print(f"⚠️ Screener 抓取失敗，使用替代備選清單: {e}")
-        gainers_tickers = ["PLTR", "NVDA", "TSLA", "AMD", "SMCI", "MARA", "COIN", "IONQ", "SOUN", "RIOS"]
+        print(f"⚠️ Yahoo Screener API 抓取失敗: {e}")
 
-    return [t for t in gainers_tickers if t][:10]
+    if not gainers_tickers:
+        gainers_tickers = ["PLTR", "NVDA", "TSLA", "AMD", "SMCI", "MARA", "COIN", "IONQ", "SOUN"]
+
+    return gainers_tickers[:10]
 
 
 def fetch_stock_data(ticker: str):
