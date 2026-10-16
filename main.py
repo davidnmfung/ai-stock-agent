@@ -122,6 +122,8 @@ def analyze_news_sentiment(ticker: str, news_items: list) -> dict:
 - 7.0~10.0 分：強勁利多（例如：財報遠超預期、上調展望、重大商業訂單、FDA 批准）。
 """
 
+    url = f"https://generativelanguage.googleapis.com/v1beta/models/generative-language:generateContent?key={GEMINI_API_KEY}"
+    # 使用正確的 Gemini API 端點
     url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={GEMINI_API_KEY}"
     payload = {
         "contents": [{"parts": [{"text": prompt}]}],
@@ -230,7 +232,7 @@ def fetch_stock_data(ticker: str):
 # ==================== 報告產生邏輯 ====================
 
 def run_top10_market_gainers_analysis():
-    """全美股當日 Top 10 漲幅榜 + Gemini AI 催化劑解析"""
+    """全美股當日 Top 10 漲幅榜 + Gemini AI 催化劑解析 + 紀錄信號"""
     top_tickers = fetch_top_market_gainers()
     if not top_tickers:
         return
@@ -249,12 +251,26 @@ def run_top10_market_gainers_analysis():
         score = ai_res["score"]
         summary = ai_res["summary"]
 
+        # 記錄至 Phase 3 歷史追蹤器
+        tracker.log_signal(
+            ticker=data["ticker"],
+            price=data["price"],
+            gain_pct=data["gain_pct"],
+            rvol=data["rvol"],
+            ai_score=score,
+            catalyst=summary
+        )
+
         msg += f"*{idx}. ${data['ticker']}* | 價格: `${data['price']}` | 漲幅: `{data['gain_pct']}%` | RVOL: `{data['rvol']}x`\n"
         msg += f"   🧠 *Gemini AI 評分*: `{score}/10` — _{summary}_\n"
         if news_items:
             title, link = news_items[0]
             msg += f"   📰 [{title}]({link})\n"
         msg += "\n"
+
+    # 附上歷史統計摘要
+    history_summary = tracker.get_history_summary()
+    msg += f"------------------\n{history_summary}"
 
     send_telegram_message(msg)
 
@@ -299,7 +315,7 @@ def main():
     if stock_metrics:
         run_heartbeat_summary(stock_metrics)
 
-    # 2. 執行全美股當日 Top 10 飆股 + Gemini AI 分析
+    # 2. 執行全美股當日 Top 10 飆股 + Gemini AI 分析與歷史追蹤
     run_top10_market_gainers_analysis()
 
 
