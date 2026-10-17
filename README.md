@@ -1,31 +1,44 @@
-# 📈 Automated Quantitative Equity Scanner & Options Momentum Engine
+# 🚀 AlphaPulse AI: Quantitative Momentum Scanner & Event Agent
 
-An enterprise-grade, serverless quantitative trading engine designed to scan US equity markets for volume breakout setups, evaluate option chain liquidity, and automatically dispatch real-time institutional alerts.
-
-Built with a modular Python architecture and deployed via GitHub Actions CI/CD pipeline, this system features an automated forward-testing logger to build verifiable track records for strategy backtesting.
+An institutional-grade, automated quantitative equity scanner and event-driven catalyst interpreter. Designed for systematic momentum tracking in US equity markets using quantitative filters and generative AI (Gemini 1.5 Flash).
 
 ---
 
-## 🏗️ System Architecture & Data Flow
+## 🌟 Key Features
 
-```mermaid
-graph TD
-    A[Cron Schedule / Market Open] -->|Trigger| B[GitHub Actions Runner]
-    B --> C[Market Hours Evaluator]
-    C -->|Market Open| D[Data Pipeline Engine]
-    C -->|Market Closed| Z[Graceful Exit]
-    
-    D -->|Fetch OHLCV| E[yFinance API]
-    D -->|Fetch News| F[Finnhub API]
-    
-    E --> G[Strategy Engine]
-    G -->|RVOL ≥ 1.3x & Gain ≥ 1.5%| H[Breakout Filter]
-    
-    H --> I[Options Chain Analytics]
-    I -->|Select Strike & Expiry| J[Risk/Reward Advisor]
-    
-    J --> K[Notifier Engine]
-    K -->|Push Alert| L[Telegram VIP Channel]
-    
-    J --> M[Signal Tracker Engine]
-    M -->|Append Entry| N[(data/signal_history.csv)]
+- **Dual-Track Market Monitoring**:
+  * **Core Watchlist Heartbeat**: Tracks custom high-momentum growth equities.
+  * **Dynamic Market Gainers**: Real-time screening of top intraday gainers across US exchanges via yFinance API.
+- **Algorithmic Signal Screening**:
+  * Relative Volume (**RVOL >= 1.3x**) filtering to detect institutional order flow.
+  * True Range / Volatility metrics utilizing **14-day ATR ratios**.
+  * Intraday price location scoring to weed out late-day fading stocks.
+- **Generative AI Catalyst Scoring**:
+  * Integrates **Finnhub API** for real-time news aggregation.
+  * Uses **Gemini 1.5 Flash** to score news catalysts (1.0 to 10.0 scale) and generate concise event summaries.
+- **Persistent Forward Testing & Analytics**:
+  * **`SignalTracker`**: Automatically logs daily breakout signals to `data/signal_history.csv` for win-rate backtesting and performance analytics.
+- **Serverless CI/CD Delivery**:
+  * Runs seamlessly on **GitHub Actions** with automated multi-chunk **Telegram Bot** alerts.
+
+---
+
+## 🏗️ Architecture & Modular Design
+
+```text
+ai-stock-agent/
+├── .github/
+│   └── workflows/
+│       └── stock_scanner.yml     # Serverless CI/CD Scheduler
+├── config/
+│   └── settings.py               # Watchlists, Thresholds & API Configs
+├── src/
+│   ├── __init__.py
+│   ├── data_engine.py            # Market & News Aggregator (yFinance/Finnhub)
+│   ├── strategy_engine.py        # Gemini AI Sentiment & Event Catalyst Engine
+│   ├── tracker.py                # Historical Signal & Win-Rate Tracker
+│   └── notifier.py               # Multi-chunk Telegram Alert Pipeline
+├── data/
+│   └── signal_history.csv        # Persistent Storage for Forward Testing
+├── main.py                       # Application Entry Point
+└── requirements.txt
