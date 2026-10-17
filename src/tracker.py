@@ -19,7 +19,6 @@ class SignalTracker:
             try:
                 df = pd.read_csv(HISTORY_FILE)
                 if not all(col in df.columns for col in expected_columns):
-                    # 欄位不符則重建
                     df = pd.DataFrame(columns=expected_columns)
                     df.to_csv(HISTORY_FILE, index=False)
             except Exception:
@@ -36,7 +35,6 @@ class SignalTracker:
         except Exception:
             df = pd.DataFrame(columns=["date", "ticker", "price", "gain_pct", "rvol", "ai_score", "catalyst"])
         
-        # 避免同一天重複記錄相同代號
         if df.empty or not "date" in df.columns or not ((df["date"] == today_str) & (df["ticker"] == ticker)).any():
             new_row = pd.DataFrame([{
                 "date": today_str,
