@@ -1,5 +1,7 @@
 # 🚀 AlphaPulse AI: Quantitative Momentum Scanner & Event Agent
 
+> 🏆 **Recognition**: Architecture selected for the [XERJ Corpus Hub](https://github.com/xerj-org/xerj) as an exemplary open-source reference for production-grade modular software design.
+
 An institutional-grade, automated quantitative equity scanner and event-driven catalyst interpreter. Designed for systematic momentum tracking in US equity markets using quantitative filters and generative AI (Gemini 1.5 Flash).
 
 ---
