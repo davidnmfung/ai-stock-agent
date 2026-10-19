@@ -39,6 +39,7 @@ ai-stock-agent/
 │   ├── data_engine.py            # Market & News Aggregator (yFinance/Finnhub)
 │   ├── strategy_engine.py        # Gemini AI Sentiment & Event Catalyst Engine
 │   ├── tracker.py                # Historical Signal & Win-Rate Tracker
+│   ├── analytics.py              # Automated Win-Rate & Multi-Day ROI Backtesting Engine
 │   └── notifier.py               # Multi-chunk Telegram Alert Pipeline
 ├── data/
 │   └── signal_history.csv        # Persistent Storage for Forward Testing
