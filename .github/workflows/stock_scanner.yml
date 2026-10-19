@@ -1,46 +1,47 @@
-name: Stock Scanner
+name: AlphaPulse AI Market Scanner
 
 on:
   schedule:
-    # 每 5 分鐘（UTC）；實際是否掃描由 main.py 的美股交易時段檢查決定
-    - cron: "*/5 * * * 1-5"
+    # 盤中每 15 分鐘執行一次 (週一至週五)
+    - cron: '*/15 13-21 * * 1-5'
   workflow_dispatch:
 
-permissions:
-  contents: write
-
 jobs:
-  scan:
+  scan-and-export:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
 
     steps:
-      - name: Checkout repository
+      - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Set up Python
+      - name: Set up Python 3.11
         uses: actions/setup-python@v5
         with:
-          python-version: "3.11"
-          cache: pip
-          cache-dependency-path: requirements.txt
+          python-version: '3.11'
 
-      - name: Install dependencies
-        run: pip install -r requirements.txt
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
 
-      - name: Run stock scan
+      - name: Run AlphaPulse Scanner
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
           FINNHUB_API_KEY: ${{ secrets.FINNHUB_API_KEY }}
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-        run: python main.py
-
-      - name: Commit and push updated signal history
         run: |
-          git config --local user.email "github-actions[bot]@users.noreply.github.com"
-          git config --local user.name "github-actions[bot]"
-          if [ -f "data/signal_history.csv" ]; then
-            git add data/signal_history.csv
-            git diff --quiet && git diff --staged --quiet || (git commit -m "auto: update signal history log [skip ci]" && git push)
-          fi
+          python main.py
+
+      - name: Run Win-Rate Analytics & Web Data Exporter
+        run: |
+          python -m src.analytics
+          python -m src.web_exporter
+
+      - name: Commit and Push Updated Signal Data
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/signal_history.csv web/public/data/dashboard_data.json
+          git commit -m "chore(data): auto-update signal history & dashboard JSON [skip ci]" || exit 0
+          git push
