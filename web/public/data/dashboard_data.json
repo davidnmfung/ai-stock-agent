@@ -1,6 +1,6 @@
 {
-  "last_updated": "2026-10-29 00:37:34 UTC",
-  "total_signals": 39,
+  "last_updated": "2026-10-29 18:51:13 UTC",
+  "total_signals": 49,
   "win_rate_t1": 68.5,
   "signals": [
     {
@@ -351,6 +351,96 @@
       "price": 46.98,
       "gain_pct": 2.42,
       "rvol": 1.0,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-10-29",
+      "ticker": "ADT",
+      "price": 9.93,
+      "gain_pct": 0.46,
+      "rvol": 14.7,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-10-29",
+      "ticker": "GKOS",
+      "price": 239.97,
+      "gain_pct": 13.73,
+      "rvol": 3.04,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-10-29",
+      "ticker": "BHC",
+      "price": 8.84,
+      "gain_pct": 15.4,
+      "rvol": 5.7,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-10-29",
+      "ticker": "PRCH",
+      "price": 20.55,
+      "gain_pct": 5.58,
+      "rvol": 3.35,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-10-29",
+      "ticker": "CROX",
+      "price": 150.23,
+      "gain_pct": 7.5,
+      "rvol": 2.85,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-10-29",
+      "ticker": "PURR",
+      "price": 11.94,
+      "gain_pct": 6.18,
+      "rvol": 4.46,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-10-29",
+      "ticker": "CVNA",
+      "price": 68.32,
+      "gain_pct": 4.66,
+      "rvol": 1.62,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-10-29",
+      "ticker": "MESO",
+      "price": 15.43,
+      "gain_pct": -0.45,
+      "rvol": 3.03,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-10-29",
+      "ticker": "FTAI",
+      "price": 192.75,
+      "gain_pct": 4.1,
+      "rvol": 1.2,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-10-29",
+      "ticker": "GEN",
+      "price": 28.03,
+      "gain_pct": 3.59,
+      "rvol": 1.15,
       "ai_score": 5.0,
       "catalyst": "無顯著即時新聞催化劑"
     }
