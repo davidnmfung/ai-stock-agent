@@ -78,31 +78,50 @@ def fetch_stock_data(ticker: str):
         print(f"⚠️ 無法取得 {ticker} 數據: {e}")
         return None
 
-def get_news(ticker: str):
-    """Finnhub 最新新聞擷取"""
-    news_list = []
-    if not FINNHUB_API_KEY:
-        return news_list
+def clean_text(text: str) -> str:
+    """清理文字中的 Markdown 與特殊標點"""
+    if not text:
+        return ""
+    for char in ["*", "_", "`", "[", "]", "(", ")", "#"]:
+        text = text.replace(char, "")
+    return text.strip()
 
-    try:
-        today = datetime.now().date()
-        today_str = today.strftime("%Y-%m-%d")
-        from_str = (today - timedelta(days=7)).strftime("%Y-%m-%d")
-        url = f"https://finnhub.io/api/v1/company-news?symbol={ticker}&from={from_str}&to={today_str}&token={FINNHUB_API_KEY}"
-        res = requests.get(url, timeout=5)
-        if res.status_code == 200:
-            for item in res.json()[:3]:
-                title = (
-                    item.get("headline", "")
-                    .replace("*", "")
-                    .replace("_", "")
-                    .replace("`", "")
-                    .replace("[", "")
-                    .replace("]", "")
-                )
-                url_link = item.get("url", "")
-                if title and url_link:
-                    news_list.append((title, url_link))
-    except Exception:
-        pass
+def get_news(ticker: str):
+    """雙源新聞擷取（優先 Finnhub，備援 yfinance），解決 AI 5.0 預設分問題"""
+    news_list = []
+    
+    # 1. 優先嘗試合併查詢 Finnhub (搜尋過去 7 天)
+    if FINNHUB_API_KEY:
+        try:
+            today = datetime.now().date()
+            today_str = today.strftime("%Y-%m-%d")
+            from_str = (today - timedelta(days=7)).strftime("%Y-%m-%d")
+            url = f"https://finnhub.io/api/v1/company-news?symbol={ticker}&from={from_str}&to={today_str}&token={FINNHUB_API_KEY}"
+            res = requests.get(url, timeout=5)
+            if res.status_code == 200:
+                items = res.json()
+                for item in items[:3]:
+                    title = clean_text(item.get("headline", ""))
+                    url_link = item.get("url", "")
+                    if title and url_link:
+                        news_list.append((title, url_link))
+        except Exception as e:
+            print(f"⚠️ Finnhub 新聞抓取失敗 ({ticker}): {e}")
+
+    # 2. 備援機制：若 Finnhub 無新聞，則使用 yfinance 補位
+    if not news_list:
+        try:
+            stock = yf.Ticker(ticker)
+            yf_news = stock.news
+            if yf_news:
+                for item in yf_news[:3]:
+                    # 支援 yfinance 新版與舊版 JSON 結構
+                    content = item.get("content", {}) if "content" in item else item
+                    title = clean_text(content.get("title", ""))
+                    click_url = content.get("canonicalUrl", {}).get("url", "") or content.get("link", "")
+                    if title:
+                        news_list.append((title, click_url or "https://finance.yahoo.com"))
+        except Exception as e:
+            print(f"⚠️ yfinance 新聞抓取失敗 ({ticker}): {e}")
+
     return news_list

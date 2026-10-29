@@ -1,4 +1,5 @@
 # 🚀 AlphaPulse AI: Quantitative Momentum Scanner & Event Agent
+[![XERJ Corpus Hub contributor](https://hub.xerj.org/contributors/davidnmfung/badge.svg)](https://hub.xerj.org/contributors/davidnmfung)
 
 > 🏆 **Recognition**: Architecture selected for the [XERJ Corpus Hub](https://github.com/xerj-org/xerj) as an exemplary open-source reference for production-grade modular software design.
 
