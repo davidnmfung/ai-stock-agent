@@ -1,6 +1,6 @@
 {
-  "last_updated": "2026-10-19 02:12:27 UTC",
-  "total_signals": 29,
+  "last_updated": "2026-10-29 00:37:34 UTC",
+  "total_signals": 39,
   "win_rate_t1": 68.5,
   "signals": [
     {
@@ -260,6 +260,96 @@
       "ticker": "EQNR",
       "price": 46.98,
       "gain_pct": 2.43,
+      "rvol": 1.0,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-10-19",
+      "ticker": "CRGY",
+      "price": 13.77,
+      "gain_pct": 8.43,
+      "rvol": 1.07,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-10-19",
+      "ticker": "PAYP",
+      "price": 15.68,
+      "gain_pct": 6.02,
+      "rvol": 2.43,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-10-19",
+      "ticker": "MTDR",
+      "price": 57.52,
+      "gain_pct": 6.15,
+      "rvol": 1.71,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-10-19",
+      "ticker": "AR",
+      "price": 38.65,
+      "gain_pct": 5.51,
+      "rvol": 1.78,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-10-19",
+      "ticker": "NOG",
+      "price": 27.16,
+      "gain_pct": 4.26,
+      "rvol": 0.9,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-10-19",
+      "ticker": "SM",
+      "price": 39.5,
+      "gain_pct": 4.08,
+      "rvol": 1.35,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-10-19",
+      "ticker": "OVV",
+      "price": 69.33,
+      "gain_pct": 3.87,
+      "rvol": 1.02,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-10-19",
+      "ticker": "MUR",
+      "price": 41.74,
+      "gain_pct": 3.62,
+      "rvol": 0.77,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-10-19",
+      "ticker": "TALO",
+      "price": 17.77,
+      "gain_pct": 3.43,
+      "rvol": 1.23,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-10-19",
+      "ticker": "EQNR",
+      "price": 46.98,
+      "gain_pct": 2.42,
       "rvol": 1.0,
       "ai_score": 5.0,
       "catalyst": "無顯著即時新聞催化劑"
