@@ -1,6 +1,6 @@
 {
-  "last_updated": "2026-10-30 18:29:13 UTC",
-  "total_signals": 59,
+  "last_updated": "2026-10-30 22:37:19 UTC",
+  "total_signals": 60,
   "win_rate_t1": 68.5,
   "signals": [
     {
@@ -531,6 +531,15 @@
       "price": 112.96,
       "gain_pct": 4.58,
       "rvol": 1.06,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-10-30",
+      "ticker": "BTSG",
+      "price": 66.89,
+      "gain_pct": 2.14,
+      "rvol": 2.48,
       "ai_score": 5.0,
       "catalyst": "無顯著即時新聞催化劑"
     }
