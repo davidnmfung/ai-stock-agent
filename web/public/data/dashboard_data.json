@@ -1,6 +1,6 @@
 {
-  "last_updated": "2026-10-29 23:08:33 UTC",
-  "total_signals": 49,
+  "last_updated": "2026-10-30 18:29:13 UTC",
+  "total_signals": 59,
   "win_rate_t1": 68.5,
   "signals": [
     {
@@ -441,6 +441,96 @@
       "price": 28.03,
       "gain_pct": 3.59,
       "rvol": 1.15,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-10-30",
+      "ticker": "CDNA",
+      "price": 85.64,
+      "gain_pct": 4.31,
+      "rvol": 2.5,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-10-30",
+      "ticker": "FDXF",
+      "price": 126.53,
+      "gain_pct": 9.84,
+      "rvol": 1.63,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-10-30",
+      "ticker": "CPRI",
+      "price": 18.5,
+      "gain_pct": 4.23,
+      "rvol": 2.14,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-10-30",
+      "ticker": "MEOH",
+      "price": 70.99,
+      "gain_pct": 6.02,
+      "rvol": 4.01,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-10-30",
+      "ticker": "REGN",
+      "price": 923.84,
+      "gain_pct": 6.26,
+      "rvol": 3.14,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-10-30",
+      "ticker": "CVCO",
+      "price": 612.29,
+      "gain_pct": -0.24,
+      "rvol": 1.82,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-10-30",
+      "ticker": "GPN",
+      "price": 95.12,
+      "gain_pct": 10.6,
+      "rvol": 5.99,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-10-30",
+      "ticker": "OLN",
+      "price": 17.61,
+      "gain_pct": 8.6,
+      "rvol": 0.84,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-10-30",
+      "ticker": "GDDY",
+      "price": 115.51,
+      "gain_pct": 11.39,
+      "rvol": 0.97,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-10-30",
+      "ticker": "VLTO",
+      "price": 112.96,
+      "gain_pct": 4.58,
+      "rvol": 1.06,
       "ai_score": 5.0,
       "catalyst": "無顯著即時新聞催化劑"
     }
