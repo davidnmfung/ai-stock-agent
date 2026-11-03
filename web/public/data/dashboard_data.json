@@ -1,6 +1,6 @@
 {
-  "last_updated": "2026-11-02 22:13:57 UTC",
-  "total_signals": 70,
+  "last_updated": "2026-11-03 19:59:53 UTC",
+  "total_signals": 80,
   "win_rate_t1": 68.5,
   "signals": [
     {
@@ -630,6 +630,96 @@
       "price": 67.91,
       "gain_pct": 3.82,
       "rvol": 2.61,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-11-03",
+      "ticker": "AEHR",
+      "price": 64.22,
+      "gain_pct": 12.39,
+      "rvol": 2.71,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-11-03",
+      "ticker": "GPK",
+      "price": 11.08,
+      "gain_pct": 3.84,
+      "rvol": 1.58,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-11-03",
+      "ticker": "XMTR",
+      "price": 113.46,
+      "gain_pct": 29.23,
+      "rvol": 1.64,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-11-03",
+      "ticker": "FN",
+      "price": 366.64,
+      "gain_pct": 11.11,
+      "rvol": 1.51,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-11-03",
+      "ticker": "NBIX",
+      "price": 168.07,
+      "gain_pct": 5.7,
+      "rvol": 2.15,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-11-03",
+      "ticker": "CIFR",
+      "price": 7.97,
+      "gain_pct": 12.01,
+      "rvol": 0.91,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-11-03",
+      "ticker": "HUT",
+      "price": 63.45,
+      "gain_pct": 14.24,
+      "rvol": 1.1,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-11-03",
+      "ticker": "RIOT",
+      "price": 13.62,
+      "gain_pct": 13.64,
+      "rvol": 1.21,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-11-03",
+      "ticker": "BETA",
+      "price": 23.3,
+      "gain_pct": 3.74,
+      "rvol": 1.72,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-11-03",
+      "ticker": "FISV",
+      "price": 59.1,
+      "gain_pct": 4.44,
+      "rvol": 1.88,
       "ai_score": 5.0,
       "catalyst": "無顯著即時新聞催化劑"
     }
