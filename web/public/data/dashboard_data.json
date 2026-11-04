@@ -1,6 +1,6 @@
 {
-  "last_updated": "2026-11-03 19:59:53 UTC",
-  "total_signals": 80,
+  "last_updated": "2026-11-04 00:33:42 UTC",
+  "total_signals": 90,
   "win_rate_t1": 68.5,
   "signals": [
     {
@@ -720,6 +720,96 @@
       "price": 59.1,
       "gain_pct": 4.44,
       "rvol": 1.88,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-11-04",
+      "ticker": "AEHR",
+      "price": 65.11,
+      "gain_pct": 14.17,
+      "rvol": 3.34,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-11-04",
+      "ticker": "GPK",
+      "price": 11.31,
+      "gain_pct": 6.0,
+      "rvol": 2.67,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-11-04",
+      "ticker": "RIOT",
+      "price": 14.02,
+      "gain_pct": 16.83,
+      "rvol": 1.87,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-11-04",
+      "ticker": "CIFR",
+      "price": 8.12,
+      "gain_pct": 14.04,
+      "rvol": 1.34,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-11-04",
+      "ticker": "XMTR",
+      "price": 111.29,
+      "gain_pct": 26.75,
+      "rvol": 2.96,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-11-04",
+      "ticker": "BETA",
+      "price": 23.64,
+      "gain_pct": 5.25,
+      "rvol": 2.43,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-11-04",
+      "ticker": "HUT",
+      "price": 63.75,
+      "gain_pct": 14.13,
+      "rvol": 1.78,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-11-04",
+      "ticker": "FN",
+      "price": 363.33,
+      "gain_pct": 10.1,
+      "rvol": 2.03,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-11-04",
+      "ticker": "GLXY",
+      "price": 16.83,
+      "gain_pct": 12.27,
+      "rvol": 0.99,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-11-04",
+      "ticker": "WULF",
+      "price": 12.53,
+      "gain_pct": 13.09,
+      "rvol": 1.11,
       "ai_score": 5.0,
       "catalyst": "無顯著即時新聞催化劑"
     }
