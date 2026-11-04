@@ -1,6 +1,6 @@
 {
-  "last_updated": "2026-11-04 00:33:42 UTC",
-  "total_signals": 90,
+  "last_updated": "2026-11-04 20:20:38 UTC",
+  "total_signals": 100,
   "win_rate_t1": 68.5,
   "signals": [
     {
@@ -810,6 +810,96 @@
       "price": 12.53,
       "gain_pct": 13.09,
       "rvol": 1.11,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-11-04",
+      "ticker": "KD",
+      "price": 17.4,
+      "gain_pct": 16.67,
+      "rvol": 2.69,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-11-04",
+      "ticker": "DUOL",
+      "price": 161.68,
+      "gain_pct": -0.04,
+      "rvol": 5.82,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-11-04",
+      "ticker": "YOU",
+      "price": 59.66,
+      "gain_pct": 16.06,
+      "rvol": 4.08,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-11-04",
+      "ticker": "PCOR",
+      "price": 75.34,
+      "gain_pct": 12.57,
+      "rvol": 1.94,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-11-04",
+      "ticker": "LIVN",
+      "price": 94.84,
+      "gain_pct": 5.31,
+      "rvol": 4.46,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-11-04",
+      "ticker": "UFPT",
+      "price": 332.6,
+      "gain_pct": 8.5,
+      "rvol": 3.03,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-11-04",
+      "ticker": "MDLN",
+      "price": 40.09,
+      "gain_pct": 7.28,
+      "rvol": 1.44,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-11-04",
+      "ticker": "MOS",
+      "price": 21.39,
+      "gain_pct": 12.61,
+      "rvol": 1.94,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-11-04",
+      "ticker": "XYZ",
+      "price": 88.03,
+      "gain_pct": 4.8,
+      "rvol": 2.62,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-11-04",
+      "ticker": "OUST",
+      "price": 33.47,
+      "gain_pct": 0.68,
+      "rvol": 1.81,
       "ai_score": 5.0,
       "catalyst": "無顯著即時新聞催化劑"
     }
