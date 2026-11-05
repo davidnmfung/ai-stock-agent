@@ -1,6 +1,6 @@
 {
-  "last_updated": "2026-11-05 00:59:44 UTC",
-  "total_signals": 110,
+  "last_updated": "2026-11-05 20:30:32 UTC",
+  "total_signals": 120,
   "win_rate_t1": 68.5,
   "signals": [
     {
@@ -990,6 +990,96 @@
       "price": 33.54,
       "gain_pct": 0.84,
       "rvol": 2.46,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-11-05",
+      "ticker": "APP",
+      "price": 352.65,
+      "gain_pct": 0.78,
+      "rvol": 2.58,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-11-05",
+      "ticker": "WRBY",
+      "price": 26.75,
+      "gain_pct": 3.18,
+      "rvol": 1.98,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-11-05",
+      "ticker": "ADMA",
+      "price": 13.05,
+      "gain_pct": 8.62,
+      "rvol": 2.36,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-11-05",
+      "ticker": "ECPG",
+      "price": 122.89,
+      "gain_pct": 12.19,
+      "rvol": 2.06,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-11-05",
+      "ticker": "XERS",
+      "price": 12.91,
+      "gain_pct": 3.2,
+      "rvol": 4.07,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-11-05",
+      "ticker": "MGNI",
+      "price": 27.81,
+      "gain_pct": 6.96,
+      "rvol": 2.52,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-11-05",
+      "ticker": "EPAM",
+      "price": 162.79,
+      "gain_pct": 4.22,
+      "rvol": 1.64,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-11-05",
+      "ticker": "ARDT",
+      "price": 15.45,
+      "gain_pct": 5.46,
+      "rvol": 3.42,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-11-05",
+      "ticker": "SEZL",
+      "price": 156.01,
+      "gain_pct": -9.7,
+      "rvol": 2.12,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-11-05",
+      "ticker": "U",
+      "price": 48.6,
+      "gain_pct": 1.13,
+      "rvol": 2.89,
       "ai_score": 5.0,
       "catalyst": "無顯著即時新聞催化劑"
     }
