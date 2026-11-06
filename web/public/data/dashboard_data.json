@@ -1,6 +1,6 @@
 {
-  "last_updated": "2026-11-06 01:05:52 UTC",
-  "total_signals": 120,
+  "last_updated": "2026-11-06 19:53:31 UTC",
+  "total_signals": 130,
   "win_rate_t1": 68.5,
   "signals": [
     {
@@ -1080,6 +1080,96 @@
       "price": 48.6,
       "gain_pct": 1.13,
       "rvol": 2.89,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-11-06",
+      "ticker": "FROG",
+      "price": 101.61,
+      "gain_pct": 6.97,
+      "rvol": 1.82,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-11-06",
+      "ticker": "FLY",
+      "price": 20.57,
+      "gain_pct": 20.23,
+      "rvol": 2.84,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-11-06",
+      "ticker": "KRMN",
+      "price": 43.31,
+      "gain_pct": 20.65,
+      "rvol": 1.62,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-11-06",
+      "ticker": "LASR",
+      "price": 37.6,
+      "gain_pct": 1.94,
+      "rvol": 1.68,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-11-06",
+      "ticker": "TMDX",
+      "price": 86.96,
+      "gain_pct": 10.49,
+      "rvol": 1.51,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-11-06",
+      "ticker": "OKLO",
+      "price": 23.71,
+      "gain_pct": 11.73,
+      "rvol": 1.55,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-11-06",
+      "ticker": "INFQ",
+      "price": 8.98,
+      "gain_pct": 14.62,
+      "rvol": 1.0,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-11-06",
+      "ticker": "IONQ",
+      "price": 31.71,
+      "gain_pct": 13.21,
+      "rvol": 1.2,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-11-06",
+      "ticker": "IREN",
+      "price": 21.48,
+      "gain_pct": 1.54,
+      "rvol": 1.24,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-11-06",
+      "ticker": "RGTI",
+      "price": 11.7,
+      "gain_pct": 13.52,
+      "rvol": 1.12,
       "ai_score": 5.0,
       "catalyst": "無顯著即時新聞催化劑"
     }
