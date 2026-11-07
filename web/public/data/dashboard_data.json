@@ -1,6 +1,6 @@
 {
-  "last_updated": "2026-11-06 19:53:31 UTC",
-  "total_signals": 130,
+  "last_updated": "2026-11-07 00:00:06 UTC",
+  "total_signals": 137,
   "win_rate_t1": 68.5,
   "signals": [
     {
@@ -1170,6 +1170,69 @@
       "price": 11.7,
       "gain_pct": 13.52,
       "rvol": 1.12,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-11-07",
+      "ticker": "LASR",
+      "price": 38.02,
+      "gain_pct": 3.08,
+      "rvol": 2.5,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-11-07",
+      "ticker": "TMDX",
+      "price": 88.24,
+      "gain_pct": 11.53,
+      "rvol": 3.06,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-11-07",
+      "ticker": "IONQ",
+      "price": 32.62,
+      "gain_pct": 16.46,
+      "rvol": 1.85,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-11-07",
+      "ticker": "OKLO",
+      "price": 23.55,
+      "gain_pct": 10.98,
+      "rvol": 2.02,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-11-07",
+      "ticker": "IREN",
+      "price": 21.64,
+      "gain_pct": 2.32,
+      "rvol": 1.55,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-11-07",
+      "ticker": "INFQ",
+      "price": 8.89,
+      "gain_pct": 13.54,
+      "rvol": 1.52,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-11-07",
+      "ticker": "RGTI",
+      "price": 11.75,
+      "gain_pct": 14.75,
+      "rvol": 1.84,
       "ai_score": 5.0,
       "catalyst": "無顯著即時新聞催化劑"
     }
