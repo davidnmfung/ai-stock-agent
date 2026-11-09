@@ -1,6 +1,6 @@
 {
-  "last_updated": "2026-11-07 00:00:06 UTC",
-  "total_signals": 137,
+  "last_updated": "2026-11-09 22:55:06 UTC",
+  "total_signals": 147,
   "win_rate_t1": 68.5,
   "signals": [
     {
@@ -1233,6 +1233,96 @@
       "price": 11.75,
       "gain_pct": 14.75,
       "rvol": 1.84,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-11-09",
+      "ticker": "FRVO",
+      "price": 11.38,
+      "gain_pct": 25.33,
+      "rvol": 2.84,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-11-09",
+      "ticker": "PRAX",
+      "price": 332.97,
+      "gain_pct": 16.34,
+      "rvol": 3.43,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-11-09",
+      "ticker": "QXO",
+      "price": 13.78,
+      "gain_pct": 8.93,
+      "rvol": 2.36,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-11-09",
+      "ticker": "CECO",
+      "price": 52.0,
+      "gain_pct": -14.77,
+      "rvol": 2.29,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-11-09",
+      "ticker": "WRBY",
+      "price": 30.21,
+      "gain_pct": 16.6,
+      "rvol": 1.72,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-11-09",
+      "ticker": "FLY",
+      "price": 24.31,
+      "gain_pct": 14.2,
+      "rvol": 1.55,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-11-09",
+      "ticker": "COHR",
+      "price": 225.19,
+      "gain_pct": 14.02,
+      "rvol": 1.23,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-11-09",
+      "ticker": "MPWR",
+      "price": 1388.05,
+      "gain_pct": 14.71,
+      "rvol": 1.09,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-11-09",
+      "ticker": "VSAT",
+      "price": 74.37,
+      "gain_pct": 13.44,
+      "rvol": 1.43,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-11-09",
+      "ticker": "FPS",
+      "price": 22.6,
+      "gain_pct": 10.35,
+      "rvol": 0.8,
       "ai_score": 5.0,
       "catalyst": "無顯著即時新聞催化劑"
     }
