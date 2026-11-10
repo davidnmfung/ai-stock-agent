@@ -1,6 +1,6 @@
 {
-  "last_updated": "2026-11-09 22:55:06 UTC",
-  "total_signals": 147,
+  "last_updated": "2026-11-10 20:21:22 UTC",
+  "total_signals": 157,
   "win_rate_t1": 68.5,
   "signals": [
     {
@@ -1323,6 +1323,96 @@
       "price": 22.6,
       "gain_pct": 10.35,
       "rvol": 0.8,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-11-10",
+      "ticker": "AAON",
+      "price": 74.98,
+      "gain_pct": 4.67,
+      "rvol": 1.72,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-11-10",
+      "ticker": "CSQR",
+      "price": 17.59,
+      "gain_pct": 2.89,
+      "rvol": 2.63,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-11-10",
+      "ticker": "CHTR",
+      "price": 133.05,
+      "gain_pct": 9.16,
+      "rvol": 0.74,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-11-10",
+      "ticker": "ACAD",
+      "price": 17.97,
+      "gain_pct": 9.31,
+      "rvol": 0.89,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-11-10",
+      "ticker": "MARA",
+      "price": 7.22,
+      "gain_pct": 10.14,
+      "rvol": 1.35,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-11-10",
+      "ticker": "TTWO",
+      "price": 224.29,
+      "gain_pct": 2.8,
+      "rvol": 1.49,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-11-10",
+      "ticker": "EMBJ",
+      "price": 83.0,
+      "gain_pct": 3.76,
+      "rvol": 1.61,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-11-10",
+      "ticker": "MRCY",
+      "price": 84.96,
+      "gain_pct": 6.44,
+      "rvol": 0.74,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-11-10",
+      "ticker": "TNGX",
+      "price": 24.38,
+      "gain_pct": 7.21,
+      "rvol": 1.12,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-11-10",
+      "ticker": "LQDA",
+      "price": 51.26,
+      "gain_pct": 5.19,
+      "rvol": 0.75,
       "ai_score": 5.0,
       "catalyst": "無顯著即時新聞催化劑"
     }
