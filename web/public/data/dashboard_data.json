@@ -1,6 +1,6 @@
 {
-  "last_updated": "2026-11-10 20:21:22 UTC",
-  "total_signals": 157,
+  "last_updated": "2026-11-11 00:48:58 UTC",
+  "total_signals": 167,
   "win_rate_t1": 68.5,
   "signals": [
     {
@@ -1413,6 +1413,96 @@
       "price": 51.26,
       "gain_pct": 5.19,
       "rvol": 0.75,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-11-11",
+      "ticker": "AAON",
+      "price": 75.01,
+      "gain_pct": 4.7,
+      "rvol": 2.31,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-11-11",
+      "ticker": "CSQR",
+      "price": 17.52,
+      "gain_pct": 2.46,
+      "rvol": 3.56,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-11-11",
+      "ticker": "ACAD",
+      "price": 18.28,
+      "gain_pct": 11.19,
+      "rvol": 1.2,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-11-11",
+      "ticker": "CHTR",
+      "price": 134.06,
+      "gain_pct": 9.99,
+      "rvol": 1.12,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-11-11",
+      "ticker": "MARA",
+      "price": 7.34,
+      "gain_pct": 11.89,
+      "rvol": 1.63,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-11-11",
+      "ticker": "TTWO",
+      "price": 224.64,
+      "gain_pct": 2.96,
+      "rvol": 1.92,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-11-11",
+      "ticker": "ZETA",
+      "price": 35.07,
+      "gain_pct": 5.47,
+      "rvol": 1.93,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-11-11",
+      "ticker": "LQDA",
+      "price": 51.4,
+      "gain_pct": 5.48,
+      "rvol": 1.11,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-11-11",
+      "ticker": "EMBJ",
+      "price": 82.5,
+      "gain_pct": 3.12,
+      "rvol": 1.96,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-11-11",
+      "ticker": "TNGX",
+      "price": 24.3,
+      "gain_pct": 6.86,
+      "rvol": 1.76,
       "ai_score": 5.0,
       "catalyst": "無顯著即時新聞催化劑"
     }
