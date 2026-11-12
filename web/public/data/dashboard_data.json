@@ -1,6 +1,6 @@
 {
-  "last_updated": "2026-11-12 01:55:15 UTC",
-  "total_signals": 177,
+  "last_updated": "2026-11-12 20:42:26 UTC",
+  "total_signals": 187,
   "win_rate_t1": 68.5,
   "signals": [
     {
@@ -1593,6 +1593,96 @@
       "price": 22.39,
       "gain_pct": 8.35,
       "rvol": 3.31,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-11-12",
+      "ticker": "PLBL",
+      "price": 7.02,
+      "gain_pct": 25.58,
+      "rvol": 10.35,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-11-12",
+      "ticker": "MBGL",
+      "price": 22.91,
+      "gain_pct": 8.48,
+      "rvol": 1.75,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-11-12",
+      "ticker": "CHA",
+      "price": 13.52,
+      "gain_pct": 4.0,
+      "rvol": 3.38,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-11-12",
+      "ticker": "LUNR",
+      "price": 13.26,
+      "gain_pct": -7.72,
+      "rvol": 2.0,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-11-12",
+      "ticker": "DPC",
+      "price": 34.19,
+      "gain_pct": 3.36,
+      "rvol": 1.43,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-11-12",
+      "ticker": "FIGR",
+      "price": 25.66,
+      "gain_pct": 1.24,
+      "rvol": 1.62,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-11-12",
+      "ticker": "CDLR",
+      "price": 7.02,
+      "gain_pct": 2.48,
+      "rvol": 0.63,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-11-12",
+      "ticker": "LMND",
+      "price": 43.09,
+      "gain_pct": 7.39,
+      "rvol": 0.71,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-11-12",
+      "ticker": "IBP",
+      "price": 222.06,
+      "gain_pct": 3.75,
+      "rvol": 0.93,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-11-12",
+      "ticker": "HUBS",
+      "price": 214.14,
+      "gain_pct": 1.06,
+      "rvol": 1.0,
       "ai_score": 5.0,
       "catalyst": "無顯著即時新聞催化劑"
     }
