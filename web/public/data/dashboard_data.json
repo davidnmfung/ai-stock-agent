@@ -1,6 +1,6 @@
 {
-  "last_updated": "2026-11-13 01:29:49 UTC",
-  "total_signals": 187,
+  "last_updated": "2026-11-13 20:23:54 UTC",
+  "total_signals": 197,
   "win_rate_t1": 68.5,
   "signals": [
     {
@@ -1683,6 +1683,96 @@
       "price": 214.14,
       "gain_pct": 1.06,
       "rvol": 1.0,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-11-13",
+      "ticker": "LFTO",
+      "price": 24.43,
+      "gain_pct": 2.93,
+      "rvol": 8.41,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-11-13",
+      "ticker": "MOD",
+      "price": 136.99,
+      "gain_pct": -3.53,
+      "rvol": 3.8,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-11-13",
+      "ticker": "STN",
+      "price": 85.23,
+      "gain_pct": 2.64,
+      "rvol": 2.54,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-11-13",
+      "ticker": "CBRS",
+      "price": 108.85,
+      "gain_pct": 0.41,
+      "rvol": 2.96,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-11-13",
+      "ticker": "NU",
+      "price": 13.1,
+      "gain_pct": 6.03,
+      "rvol": 2.25,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-11-13",
+      "ticker": "STVN",
+      "price": 15.63,
+      "gain_pct": 6.57,
+      "rvol": 1.18,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-11-13",
+      "ticker": "ALM",
+      "price": 8.23,
+      "gain_pct": 8.72,
+      "rvol": 1.07,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-11-13",
+      "ticker": "CLBT",
+      "price": 11.74,
+      "gain_pct": 6.77,
+      "rvol": 1.11,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-11-13",
+      "ticker": "KLAR",
+      "price": 13.62,
+      "gain_pct": 6.61,
+      "rvol": 1.76,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-11-13",
+      "ticker": "WWW",
+      "price": 24.5,
+      "gain_pct": 4.7,
+      "rvol": 1.89,
       "ai_score": 5.0,
       "catalyst": "無顯著即時新聞催化劑"
     }
