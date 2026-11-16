@@ -1,6 +1,6 @@
 {
-  "last_updated": "2026-11-14 00:58:52 UTC",
-  "total_signals": 207,
+  "last_updated": "2026-11-16 22:47:06 UTC",
+  "total_signals": 217,
   "win_rate_t1": 68.5,
   "signals": [
     {
@@ -1863,6 +1863,96 @@
       "price": 44.78,
       "gain_pct": 7.57,
       "rvol": 0.97,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-11-16",
+      "ticker": "CGON",
+      "price": 84.78,
+      "gain_pct": -7.85,
+      "rvol": 6.32,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-11-16",
+      "ticker": "TU",
+      "price": 9.57,
+      "gain_pct": -0.36,
+      "rvol": 7.33,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-11-16",
+      "ticker": "MOH",
+      "price": 233.09,
+      "gain_pct": 9.34,
+      "rvol": 2.91,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-11-16",
+      "ticker": "HTHT",
+      "price": 54.88,
+      "gain_pct": 5.38,
+      "rvol": 2.14,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-11-16",
+      "ticker": "TSN",
+      "price": 63.95,
+      "gain_pct": 5.01,
+      "rvol": 1.86,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-11-16",
+      "ticker": "HUBS",
+      "price": 231.98,
+      "gain_pct": 4.46,
+      "rvol": 1.57,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-11-16",
+      "ticker": "POWL",
+      "price": 151.2,
+      "gain_pct": 8.0,
+      "rvol": 4.35,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-11-16",
+      "ticker": "BILL",
+      "price": 57.63,
+      "gain_pct": 4.65,
+      "rvol": 2.13,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-11-16",
+      "ticker": "QLYS",
+      "price": 182.01,
+      "gain_pct": 6.08,
+      "rvol": 0.83,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-11-16",
+      "ticker": "HNGE",
+      "price": 121.29,
+      "gain_pct": 4.61,
+      "rvol": 1.53,
       "ai_score": 5.0,
       "catalyst": "無顯著即時新聞催化劑"
     }
