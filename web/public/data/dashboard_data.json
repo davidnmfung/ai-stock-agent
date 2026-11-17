@@ -1,6 +1,6 @@
 {
-  "last_updated": "2026-11-16 22:47:06 UTC",
-  "total_signals": 217,
+  "last_updated": "2026-11-17 21:35:11 UTC",
+  "total_signals": 227,
   "win_rate_t1": 68.5,
   "signals": [
     {
@@ -1953,6 +1953,96 @@
       "price": 121.29,
       "gain_pct": 4.61,
       "rvol": 1.53,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-11-17",
+      "ticker": "SLS",
+      "price": 19.15,
+      "gain_pct": -20.21,
+      "rvol": 18.61,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-11-17",
+      "ticker": "BILL",
+      "price": 64.88,
+      "gain_pct": 14.31,
+      "rvol": 6.83,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-11-17",
+      "ticker": "ACM",
+      "price": 80.53,
+      "gain_pct": 1.3,
+      "rvol": 2.67,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-11-17",
+      "ticker": "RYTM",
+      "price": 116.61,
+      "gain_pct": 9.18,
+      "rvol": 2.77,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-11-17",
+      "ticker": "MNSO",
+      "price": 12.18,
+      "gain_pct": 9.93,
+      "rvol": 3.0,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-11-17",
+      "ticker": "SNAP",
+      "price": 5.5,
+      "gain_pct": 7.42,
+      "rvol": 2.01,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-11-17",
+      "ticker": "UNFI",
+      "price": 51.99,
+      "gain_pct": 1.19,
+      "rvol": 2.51,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-11-17",
+      "ticker": "SA",
+      "price": 26.28,
+      "gain_pct": 6.74,
+      "rvol": 2.34,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-11-17",
+      "ticker": "TME",
+      "price": 9.47,
+      "gain_pct": -1.25,
+      "rvol": 1.79,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-11-17",
+      "ticker": "TWST",
+      "price": 112.0,
+      "gain_pct": 5.16,
+      "rvol": 0.68,
       "ai_score": 5.0,
       "catalyst": "無顯著即時新聞催化劑"
     }
