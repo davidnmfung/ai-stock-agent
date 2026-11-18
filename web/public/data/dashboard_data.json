@@ -1,6 +1,6 @@
 {
-  "last_updated": "2026-11-18 03:09:23 UTC",
-  "total_signals": 237,
+  "last_updated": "2026-11-18 21:11:29 UTC",
+  "total_signals": 247,
   "win_rate_t1": 68.5,
   "signals": [
     {
@@ -2133,6 +2133,96 @@
       "price": 112.0,
       "gain_pct": 4.93,
       "rvol": 0.68,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-11-18",
+      "ticker": "PLBL",
+      "price": 8.88,
+      "gain_pct": 16.23,
+      "rvol": 0.79,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-11-18",
+      "ticker": "TENB",
+      "price": 44.68,
+      "gain_pct": 14.42,
+      "rvol": 1.63,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-11-18",
+      "ticker": "MFP",
+      "price": 48.28,
+      "gain_pct": 14.76,
+      "rvol": 2.07,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-11-18",
+      "ticker": "QLYS",
+      "price": 197.24,
+      "gain_pct": 11.01,
+      "rvol": 1.06,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-11-18",
+      "ticker": "NTSK",
+      "price": 23.5,
+      "gain_pct": 12.46,
+      "rvol": 1.37,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-11-18",
+      "ticker": "FSLY",
+      "price": 17.9,
+      "gain_pct": 11.98,
+      "rvol": 2.19,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-11-18",
+      "ticker": "OKTA",
+      "price": 195.61,
+      "gain_pct": 9.9,
+      "rvol": 2.25,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-11-18",
+      "ticker": "ATEN",
+      "price": 32.36,
+      "gain_pct": 9.32,
+      "rvol": 1.35,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-11-18",
+      "ticker": "S",
+      "price": 23.34,
+      "gain_pct": 7.41,
+      "rvol": 0.78,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-11-18",
+      "ticker": "SAIL",
+      "price": 22.25,
+      "gain_pct": 8.86,
+      "rvol": 1.12,
       "ai_score": 5.0,
       "catalyst": "無顯著即時新聞催化劑"
     }
