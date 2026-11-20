@@ -1,6 +1,6 @@
 {
-  "last_updated": "2026-11-20 02:24:19 UTC",
-  "total_signals": 268,
+  "last_updated": "2026-11-20 20:58:11 UTC",
+  "total_signals": 278,
   "win_rate_t1": 68.5,
   "signals": [
     {
@@ -2412,6 +2412,96 @@
       "price": 10.78,
       "gain_pct": 7.48,
       "rvol": 1.49,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-11-20",
+      "ticker": "GAP",
+      "price": 20.92,
+      "gain_pct": 3.28,
+      "rvol": 2.18,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-11-20",
+      "ticker": "GPN",
+      "price": 92.43,
+      "gain_pct": 10.02,
+      "rvol": 3.51,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-11-20",
+      "ticker": "BKE",
+      "price": 43.8,
+      "gain_pct": -0.34,
+      "rvol": 1.26,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-11-20",
+      "ticker": "KVYO",
+      "price": 22.34,
+      "gain_pct": 5.3,
+      "rvol": 1.05,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-11-20",
+      "ticker": "BIPC",
+      "price": 43.04,
+      "gain_pct": 5.16,
+      "rvol": 1.5,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-11-20",
+      "ticker": "BIP",
+      "price": 43.03,
+      "gain_pct": 4.53,
+      "rvol": 1.27,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-11-20",
+      "ticker": "PLMR",
+      "price": 163.57,
+      "gain_pct": 2.57,
+      "rvol": 2.13,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-11-20",
+      "ticker": "HDB",
+      "price": 27.43,
+      "gain_pct": 0.83,
+      "rvol": 2.02,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-11-20",
+      "ticker": "BGSI",
+      "price": 73.57,
+      "gain_pct": 2.74,
+      "rvol": 0.43,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-11-20",
+      "ticker": "ARDT",
+      "price": 15.09,
+      "gain_pct": 4.11,
+      "rvol": 0.51,
       "ai_score": 5.0,
       "catalyst": "無顯著即時新聞催化劑"
     }
