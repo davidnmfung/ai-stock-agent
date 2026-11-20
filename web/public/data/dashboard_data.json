@@ -1,6 +1,6 @@
 {
-  "last_updated": "2026-11-19 21:14:35 UTC",
-  "total_signals": 266,
+  "last_updated": "2026-11-20 02:24:19 UTC",
+  "total_signals": 268,
   "win_rate_t1": 68.5,
   "signals": [
     {
@@ -2394,6 +2394,24 @@
       "price": 13.68,
       "gain_pct": 3.29,
       "rvol": 1.77,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-11-20",
+      "ticker": "INSM",
+      "price": 144.46,
+      "gain_pct": 20.89,
+      "rvol": 6.85,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-11-20",
+      "ticker": "TU",
+      "price": 10.78,
+      "gain_pct": 7.48,
+      "rvol": 1.49,
       "ai_score": 5.0,
       "catalyst": "無顯著即時新聞催化劑"
     }
