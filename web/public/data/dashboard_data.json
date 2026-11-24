@@ -1,6 +1,6 @@
 {
-  "last_updated": "2026-11-21 02:06:01 UTC",
-  "total_signals": 278,
+  "last_updated": "2026-11-24 00:39:11 UTC",
+  "total_signals": 288,
   "win_rate_t1": 68.5,
   "signals": [
     {
@@ -2502,6 +2502,96 @@
       "price": 15.09,
       "gain_pct": 4.11,
       "rvol": 0.51,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-11-24",
+      "ticker": "NVDA",
+      "price": 165.05,
+      "gain_pct": -1.19,
+      "rvol": 1.9,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-11-24",
+      "ticker": "KYMR",
+      "price": 150.37,
+      "gain_pct": 8.96,
+      "rvol": 8.8,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-11-24",
+      "ticker": "AXTI",
+      "price": 38.02,
+      "gain_pct": -0.26,
+      "rvol": 1.32,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-11-24",
+      "ticker": "IREN",
+      "price": 14.64,
+      "gain_pct": -1.18,
+      "rvol": 1.22,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-11-24",
+      "ticker": "ALAB",
+      "price": 222.12,
+      "gain_pct": 2.53,
+      "rvol": 1.54,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-11-24",
+      "ticker": "CRDO",
+      "price": 122.46,
+      "gain_pct": -2.96,
+      "rvol": 1.4,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-11-24",
+      "ticker": "CRWV",
+      "price": 48.33,
+      "gain_pct": -4.92,
+      "rvol": 1.44,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-11-24",
+      "ticker": "SITM",
+      "price": 438.82,
+      "gain_pct": 2.02,
+      "rvol": 1.99,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-11-24",
+      "ticker": "MXL",
+      "price": 50.31,
+      "gain_pct": -0.69,
+      "rvol": 1.35,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-11-24",
+      "ticker": "ASX",
+      "price": 31.88,
+      "gain_pct": -3.71,
+      "rvol": 1.38,
       "ai_score": 5.0,
       "catalyst": "無顯著即時新聞催化劑"
     }
