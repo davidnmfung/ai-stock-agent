@@ -1,6 +1,6 @@
 {
-  "last_updated": "2026-11-24 00:39:11 UTC",
-  "total_signals": 288,
+  "last_updated": "2026-11-24 22:57:20 UTC",
+  "total_signals": 297,
   "win_rate_t1": 68.5,
   "signals": [
     {
@@ -2592,6 +2592,87 @@
       "price": 31.88,
       "gain_pct": -3.71,
       "rvol": 1.38,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-11-24",
+      "ticker": "AMTM",
+      "price": 24.8,
+      "gain_pct": 5.4,
+      "rvol": 5.83,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-11-24",
+      "ticker": "ANF",
+      "price": 168.1,
+      "gain_pct": 5.8,
+      "rvol": 3.52,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-11-24",
+      "ticker": "KSS",
+      "price": 25.33,
+      "gain_pct": 14.25,
+      "rvol": 2.5,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-11-24",
+      "ticker": "CELC",
+      "price": 68.02,
+      "gain_pct": 18.58,
+      "rvol": 1.32,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-11-24",
+      "ticker": "COGT",
+      "price": 33.01,
+      "gain_pct": 13.44,
+      "rvol": 3.01,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-11-24",
+      "ticker": "NAMS",
+      "price": 24.45,
+      "gain_pct": 16.04,
+      "rvol": 2.05,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-11-24",
+      "ticker": "STOK",
+      "price": 32.84,
+      "gain_pct": 15.47,
+      "rvol": 2.25,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-11-24",
+      "ticker": "IRON",
+      "price": 88.34,
+      "gain_pct": 14.98,
+      "rvol": 1.44,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-11-24",
+      "ticker": "DKS",
+      "price": 153.17,
+      "gain_pct": 2.97,
+      "rvol": 2.66,
       "ai_score": 5.0,
       "catalyst": "無顯著即時新聞催化劑"
     }
