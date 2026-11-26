@@ -1,6 +1,6 @@
 {
-  "last_updated": "2026-11-25 22:12:45 UTC",
-  "total_signals": 307,
+  "last_updated": "2026-11-26 22:10:56 UTC",
+  "total_signals": 317,
   "win_rate_t1": 68.5,
   "signals": [
     {
@@ -2759,6 +2759,96 @@
     },
     {
       "date": "2026-11-25",
+      "ticker": "QXO",
+      "price": 11.97,
+      "gain_pct": 10.53,
+      "rvol": 1.17,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-11-26",
+      "ticker": "BZ",
+      "price": 14.34,
+      "gain_pct": 11.6,
+      "rvol": 1.4,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-11-26",
+      "ticker": "LBTYB",
+      "price": 12.28,
+      "gain_pct": -2.15,
+      "rvol": 1.61,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-11-26",
+      "ticker": "HPQ",
+      "price": 31.15,
+      "gain_pct": 4.01,
+      "rvol": 2.46,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-11-26",
+      "ticker": "LI",
+      "price": 11.88,
+      "gain_pct": 4.16,
+      "rvol": 3.2,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-11-26",
+      "ticker": "ASTS",
+      "price": 26.02,
+      "gain_pct": 14.93,
+      "rvol": 1.33,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-11-26",
+      "ticker": "CAR",
+      "price": 141.82,
+      "gain_pct": 9.94,
+      "rvol": 1.4,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-11-26",
+      "ticker": "DKNG",
+      "price": 17.65,
+      "gain_pct": 11.64,
+      "rvol": 1.02,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-11-26",
+      "ticker": "COGT",
+      "price": 36.08,
+      "gain_pct": 7.99,
+      "rvol": 1.97,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-11-26",
+      "ticker": "RH",
+      "price": 112.42,
+      "gain_pct": 11.71,
+      "rvol": 1.35,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-11-26",
       "ticker": "QXO",
       "price": 11.97,
       "gain_pct": 10.53,
