@@ -1,6 +1,6 @@
 {
-  "last_updated": "2026-11-26 22:10:56 UTC",
-  "total_signals": 317,
+  "last_updated": "2026-11-27 21:51:24 UTC",
+  "total_signals": 327,
   "win_rate_t1": 68.5,
   "signals": [
     {
@@ -2853,6 +2853,96 @@
       "price": 11.97,
       "gain_pct": 10.53,
       "rvol": 1.17,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-11-27",
+      "ticker": "GUNN",
+      "price": 6.38,
+      "gain_pct": 9.43,
+      "rvol": 1.28,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-11-27",
+      "ticker": "XP",
+      "price": 16.99,
+      "gain_pct": -1.74,
+      "rvol": 2.58,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-11-27",
+      "ticker": "VERA",
+      "price": 34.26,
+      "gain_pct": 0.41,
+      "rvol": 1.99,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-11-27",
+      "ticker": "SNDK",
+      "price": 85.36,
+      "gain_pct": 6.81,
+      "rvol": 1.07,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-11-27",
+      "ticker": "AYA",
+      "price": 22.84,
+      "gain_pct": 6.46,
+      "rvol": 1.02,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-11-27",
+      "ticker": "COHR",
+      "price": 223.79,
+      "gain_pct": 5.97,
+      "rvol": 0.65,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-11-27",
+      "ticker": "AXTI",
+      "price": 36.37,
+      "gain_pct": 4.77,
+      "rvol": 0.65,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-11-27",
+      "ticker": "ELPC",
+      "price": 11.71,
+      "gain_pct": -1.1,
+      "rvol": 1.34,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-11-27",
+      "ticker": "SA",
+      "price": 21.52,
+      "gain_pct": 6.85,
+      "rvol": 0.22,
+      "ai_score": 5.0,
+      "catalyst": "無顯著即時新聞催化劑"
+    },
+    {
+      "date": "2026-11-27",
+      "ticker": "SKE",
+      "price": 29.14,
+      "gain_pct": 6.23,
+      "rvol": 0.47,
       "ai_score": 5.0,
       "catalyst": "無顯著即時新聞催化劑"
     }
